@@ -1,5 +1,14 @@
-//Node modules
-var FS	=	require('fs');
+//Require JS for node
+//otherwise just make sure that the browser version loads before this file.
+if(typeof process !== "undefined"){
+	//if node
+	var define = require('amdefine-node');
+	requirejs.config({
+    	nodeRequire: require
+	});
+}
+
+define(function(require, exports, module){
 
 /**--exports,module--
 name: Noodles
@@ -25,7 +34,7 @@ description: object of core module handlers
 @type{object}
 */
 var allPlugins = {
-	'coretags': require('./coretags')
+	//'coretags': require('./coretags')
 };
 /**--Noodles--
 name:Template
@@ -91,7 +100,7 @@ var _create = function(){
 			}
 			else{
 				tag = expression.split(' ')[0];
-				expression = typeof allPlugins[this._tagDelegation[tag]] !== "undefined" ? new allPlugins[this._tagDelegation[tag]](this, expression) ) : new Noodles.Object(this, expression);
+				expression = typeof allPlugins[this._tagDelegation[tag]] !== "undefined" ? new allPlugins[this._tagDelegation[tag]](this, expression) : new Noodles.Object(this, expression);
 				
 				if(typeof expression.skip === "undefined" || expression.skip === false){
 					
@@ -112,7 +121,7 @@ var _create = function(){
 	}
 	else{
 		this._templating = false;
-		this._document.push(new Noodles.String(this, this._rawString );
+		this._document.push(new Noodles.String(this, this._rawString ));
 		this._documentLength = this._document.length;
 		delete this._rawString;
 	}
@@ -287,7 +296,7 @@ description: executes the object sequence to return it's value
 */
 Noodles.Object.prototype.execute = function(_self,context){
 	if(typeof context === "undefined") throw "Noodles object received no context";
-	if(!this.meta)
+	if(!this.meta){
 		var obj = context,
 			order = this.order,
 			l = this.olength,
@@ -331,3 +340,5 @@ description: String Class executiong
 Noodles.String.prototype.execute = function(context,buffer){
 	return buffer ? this.buffer : this.string;
 };
+
+});
