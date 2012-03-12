@@ -346,5 +346,38 @@ description: String Class executiong
 Noodles.String.prototype.execute = function(context,buffer){
 	return buffer ? this.buffer : this.string;
 };
-
+/**--Noodles--
+name:Number
+description: Number Class
+@param{number}
+@return {Noodles.Number}
+*/
+Noodles.Number = function(number){
+	if(/^\d+$/.test(number)){
+		this.number = parseInt(number,10);
+	}
+	else if(/^[^\d]*\d+[^\D0]*$/.test(number)){
+		this.number = parseInt(number,10);
+	}
+	else if(/^[\d]*\d+\.{1}\d+[^\d]/.test(number)){
+		if(/^0+$/.test(/\d+\.{1}(\d)+/.exec(number)[1])){
+			this.number = parseInt(number,10);
+		}
+		else{
+			this.number = parseFloat(number,10);
+		}
+	}
+	else{
+		this.number = parseInt(number,10);
+	}
+};
+/**--Noodles.Number--
+name:execute
+description: Number Class executiong
+@param{object}
+@return {number}
+*/
+Noodles.String.prototype.execute = function(context){
+	return this.number;
+};
 });
