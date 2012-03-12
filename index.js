@@ -2,14 +2,15 @@
 //otherwise just make sure that the browser version loads before this file.
 if(typeof process !== "undefined"){
 	//if node
-	var define = require('amdefine-node');
+	var requirejs = require('require-node');
+	var define = requirejs.define;
 	requirejs.config({
-    	nodeRequire: require
+	    nodeRequire: require,
+		baseUrl: __dirname,
 	});
 }
 
-define(function(require, exports, module){
-
+define('Noodles',function(require, exports, module){
 /**--exports,module--
 name: Noodles
 description: Noodles namespace
@@ -33,9 +34,7 @@ name:allPlugins
 description: object of core module handlers
 @type{object}
 */
-var allPlugins = {
-	//'coretags': require('./coretags')
-};
+var allPlugins = {};
 /**--Noodles--
 name:Template
 description: Template Class
@@ -149,21 +148,26 @@ description: registers the plugins of the Template Class
 */
 var _registerPlugins = function(){
 	var i = this._plugins.length,
+		_self = this,
 		key, value,t;
 	while(i--){
 		key = this._plugins[i];
 		if(typeof allPlugins[key] !== "undefined"){
 			value = allPlugins[key].willHandle
 		}
-		else if(FS.fstatSync(__dirname + '/plugins/' + key).isFile === true){
-			allPlugins[key] = require('./plugins/'+ key);
-			value = allPlugins[key].willHandle;
-		}
-		else{
-			_warning.call(this,'The plugin "' + key + '" does not exist in the folder ' + __dirname + '/plugins');
+		else {
+			require(['./plugins/'+ key],function(plugin){
+				if(typeof plugin.pluginName === "undefined") throw "The following plugin needs a plugin name: "+ plugin.toString();
+				allPlugins[plugin.pluginName] = plugin;
+				var handle = plugin.willHandle,
+					i = handle.length;
+				while(i--){
+					_self._tagDelegation[handle[i]] = plugin.pluginName;
+				}
+			});
 			continue;
 		}
-		
+					
 		if(typeof value !== "undefined" && 0 < (t = value.length)){
 			while(t--){
 				this._tagDelegation[value[t]] = key;
