@@ -1,3 +1,5 @@
+//strict mode actually provides some performance benefits (so I've been told)
+'use strict';
 //Require JS for node
 //otherwise just make sure that the browser version loads before this file.
 if(typeof process !== "undefined"){
