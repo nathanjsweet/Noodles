@@ -1,0 +1,17 @@
+{
+    "name": "Noodles",
+    "description": "High Performance templating language designed to be human language agnostic (mostly)",
+    "version": "0.1",
+    "homepage" : "https://github.com/nathanjsweet/Noodles",
+    "engines": {"node": ">= 0.2.0"},
+    "author": "Nathan Sweet <nathanjsweet@gmail.com>",
+    "main": "index.js",
+    "repository" : {
+        "type" : "git",
+         "url" : "git://github.com/nathanjsweet/Noodles.git"
+    },
+    "licenses": [{
+        "type": "GPLv3",
+        "url": "http://www.gnu.org/licenses/gpl-3.0.txt"}
+    ]
+}
