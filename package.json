@@ -5,7 +5,7 @@
     "homepage" : "https://github.com/nathanjsweet/Noodles",
     "engines": {"node": ">= 0.2.0"},
     "author": "Nathan Sweet <nathanjsweet@gmail.com>",
-    "main": "index.js",
+    "main": "lib/index.js",
     "repository" : {
         "type" : "git",
          "url" : "git://github.com/nathanjsweet/Noodles.git"
