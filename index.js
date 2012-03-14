@@ -28,21 +28,17 @@ if(typeof process !== "undefined"){
 	    nodeRequire: require,
 		baseUrl: __dirname,
 	});
+	//uncomment the following line if you don't want to use require js:
+	//var _exports = exports;
 }
 
-define('Noodles',function(require, exports, module){
+define('noodles',function(require, exports, module){
 /**--module--
 name: BrowserEnvironment
 description: Browser Environment boolean
 @type{boolean}
 */	
 var BrowserEnvironment = typeof process === "undefined";
-/**--exports,module--
-name: Noodles
-description: Noodles namespace
-@type{object}
-*/
-var Noodles = exports.Noodles = {};
 /**--module--
 name:reIdentifier
 description: regular expression to determine Identifier worthiness
@@ -68,7 +64,7 @@ description: Template Class
 @param {string}
 @return {Template}
 */
-var Template = Noodles.Template = function(rawString,metaData){
+var Template = exports.Template = function(rawString,metaData){
 	this._rawString = this._stringCache = rawString;
 	this._document = [];
 	this._rightCount = 0;
@@ -117,7 +113,7 @@ var _create = function(){
 		if(rightIndex > -1){
 			this._rightCount++;
 			expression = this._rawString.slice(leftIndex + 2, rightIndex);
-			this._document.push( new Noodles.String(this, this._rawString.slice(0,leftIndex) ) );
+			this._document.push( new _String(this, this._rawString.slice(0,leftIndex) ) );
 			this._expressionList.push(this._document.length);
             this._rawString = this._rawString.slice(rightIndex + 2);
 			if(expression.charAt(0) === ' '){ 
@@ -125,14 +121,14 @@ var _create = function(){
 			}
 			else{
 				tag = expression.split(' ')[0];
-				expression = typeof allPlugins[this._tagDelegation[tag]] !== "undefined" ? new allPlugins[this._tagDelegation[tag]](this, expression) : Noodles.parseType(this, expression);
+				expression = typeof allPlugins[this._tagDelegation[tag]] !== "undefined" ? new allPlugins[this._tagDelegation[tag]](this, expression) : _parseType(this, expression);
 				
 				if(typeof expression.skip === "undefined" || expression.skip === false){
 					
 					expression.lineStart = _getLineCount.call(this);
 					this._document.push(expression);
 					expression.needs = expression.needs || {};
-					this.needs = Noodles.mergeNeeds(this,expression);
+					this.needs = _mergeNeeds(this,expression);
 				}
 				else if(typeof expression.warnings !== "undefined"){
 					_warning.call(this,expression.warnings);
@@ -145,17 +141,20 @@ var _create = function(){
 	}
 	else{
 		this._templating = false;
-		this._document.push(new Noodles.String(this, this._rawString ));
+		this._document.push(new _String(this, this._rawString ));
 		this._documentLength = this._document.length;
 		delete this._rawString;
 		tag = _stringOnly(this._document);
 		
 		if(tag.stringOnly){
 			this._stringOnly = true;
-			this._document = [new Noodles.String(tag.string)];
+			this._document = [new _String(tag.string)];
 			this._documentLength = 1;
+			this.needs = {};
 		}
-		
+		else{
+			
+		}
 	}
 };
 var _stringOnly = function(stack){
@@ -165,7 +164,7 @@ var _stringOnly = function(stack){
 		val;
 	while(i--){
 		val = stack[i];
-		if(!(val instanceof Noodles.String) && !(val instanceof Noodles.Number) && !val._stringOnly){
+		if(!(val instanceof _String) && !(val instanceof _Number) && !val._stringOnly){
 			bool = false;
 			break;
 		}
@@ -252,7 +251,7 @@ description: merges the needs the second object with the first.
 @param{object}
 @return {object}
 */
-Noodles.mergeNeeds = function(obj1,obj2){
+var _mergeNeeds = exports.mergeNeeds = function(obj1,obj2){
 	if(typeof obj1.needs === "undefined" && obj2.needs === "undefined") return {};
 	if(typeof obj1.needs === "undefined") return obj2.needs;
 	if(typeof obj2.needs === "undefined") return obj1.needs;
@@ -269,7 +268,7 @@ description: Object class
 @param{string}
 @return {Noodles.Object}
 */
-Noodles.Object = function(_self, expression){
+var _Object = exports.Object = function(_self, expression){
 	if(expression.length === 0){
 		this.skip = true;
 		return;
@@ -302,7 +301,7 @@ Noodles.Object = function(_self, expression){
 				identifier = identifier.slice(1,-1)
 			}
 			else if(reIdentifier.test(identifier)){
-				temp = new Noodles.Object(identifier);
+				temp = new _Object(identifier);
 				this.needs = Noodle.mergeNeeds(this,temp);
 				order.push(temp);
 				continue;
@@ -341,7 +340,7 @@ Noodles.Object = function(_self, expression){
 	if(this.olength === 1 && typeof order[0] === "string" && typeof _self._metaData[order[0]] !== "undefined"){
 		this.meta = true;
 		this.metaKey = order[0];
-		this.needs = Noodles.mergeNeeds(this,_self._metaData[order[0]]);
+		this.needs = _mergeNeeds(this,_self._metaData[order[0]]);
 	}
 	
 	temp = _stringOnly(this.order);
@@ -349,8 +348,9 @@ Noodles.Object = function(_self, expression){
 	if(temp.stringOnly){
 		this._stringOnly = true;
 		this.meta = false;
-		this.order = [new Noodles.String(temp.string)];
+		this.order = [new _String(temp.string)];
 		this.olength = 1
+		this.needs = {};
 	}
 };
 /**--Noodles.Object--
@@ -359,7 +359,7 @@ description: executes the object sequence to return it's value
 @param{object}
 @return {*}
 */
-Noodles.Object.prototype.execute = function(context){
+_Object.prototype.execute = function(context){
 	if(typeof context === "undefined") throw "Noodles object received no context";
 	if(!this.meta || !this._stringOnly){
 		var obj = context,
@@ -392,14 +392,14 @@ name:type
 description: descripes the type of object
 @type{string}
 */
-Noodles.Object.prototype.type = "object";
+_Object.prototype.type = "object";
 /**--Noodles--
 name:String
 description: String Class
 @param{string}
 @return {Noodles.String}
 */
-Noodles.String = function(_self,string){
+var _String = exports.String = function(_self,string){
 	this.string = string;
 	this.length = string.length;
 };
@@ -409,7 +409,7 @@ description: String Class executiong
 @param{object}
 @return {string|buffer}
 */
-Noodles.String.prototype.execute = function(context){
+_String.prototype.execute = function(context){
 	return this.string;
 };
 /**--Noodles.String--
@@ -417,14 +417,14 @@ name:type
 description: descripes the type of object
 @type{string}
 */
-Noodles.String.prototype.type = "string";
+_String.prototype.type = "string";
 /**--Noodles--
 name:Number
 description: Number Class
 @param{number}
 @return {Noodles.Number}
 */
-Noodles.Number = function(_self,number){
+var _Number = exports.Number = function(_self,number){
 	if(/^\d+$/.test(number)){
 		this.number = parseInt(number,10);
 	}
@@ -449,7 +449,7 @@ description: Number Class executiong
 @param{object}
 @return {number}
 */
-Noodles.Number.prototype.execute = function(context){
+_Number.prototype.execute = function(context){
 	return this.number;
 };
 /**--Noodles.Number--
@@ -457,7 +457,7 @@ name:type
 description: descripes the type of object
 @type{string}
 */
-Noodles.Number.prototype.type = "number";
+_Number.prototype.type = "number";
 /**--Noodles--
 name:parseType
 description: method that takes a raw input and returns it as either
@@ -466,21 +466,22 @@ description: method that takes a raw input and returns it as either
 @param{string}
 @return {*}
 */
-Noodles.parseType = function(context,input){
+var _parstType = exports.parseType = function(context,input){
 	input = input.trim();
 	
 	if(/^\d+\.?\d*$/.test(input)){
-		return new Noodles.Number(context,input);
+		return new _Number(context,input);
 	}
 	else if(/^('|")[^'"]+\1{1}$/.test(input)){
-		return new Noodles.String(context,input);
+		return new _String(context,input);
 	}
 	else if(reIdentifier.test(input)){
-		return new Noodles.Object(context,input);
+		return new _Object(context,input);
 	}
 	else{
 		return input;
 	}
 };
-
+//add to real exports if it exists
+if(typeof _exports !== "undefined") _exports = exports;
 });
