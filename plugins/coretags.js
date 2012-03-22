@@ -13,48 +13,71 @@ if(typeof process !== "undefined"){
 define('coretags',function(require, exports, module){
 //get Noodles
 var Noodles = require('noodles');
-/*--Coretags && module--
-name:willHandle
-description:array of tags that the coretags plugin will handle
-@type{array}
+/*--exports--
+name:Plugin
+description:Plugin Class implementation
+@type{Noodles.Plugin}
 */
-var willHandle = exports.willHandle = ['if','loop','set'];
-/*--Coretags--
-name:onTemplateCreate
-description:executed on template creation
-@param{Noodles.Template}
-*/
-exports.onTemplateCreate = function(Template){
-	Template.endTags = Template.endTags || {};
-	Template.endTags['if'] = true;
-	Template.endTags['loop'] = true;
-};
-/*--Coretags--
-name:onTemplateExecute
-description:executed when template is run
-@param{Noodles.Context}
-@param{Noodles.Template}
-*/
-exports.onTemplateExecute  = function(Context, Template){};
-/*--Coretags--
-name:handleToken
-description:executed when any tag in "willHandle" is found
-@param{expression}
-@param{Noodles.Template}
-@param{string}
-*/
-exports.handleToken = function(Template, expression, tag){
-	swtich(tag){
-		case 'if':
-			return new Conditional(Template,expression);
-		case 'loop':
-			return new Loop(Template,expression);
-		case 'set':
-			return new Set(Template,expression);
-		default:
-			return {skip:true};
+exports.Plugin = new Noodles.Plugin({
+	/*--Coretags--
+	name:willHandle
+	description:array of tags that the coretags plugin will handle
+	@type{array}
+	*/
+	willHandle :  ['if','loop','set'],
+	/*--Coretags--
+	name:pluginName
+	@type{string}
+	*/
+	pluginName : 'coretags',
+	/*--Coretags--
+	name:onTemplateCreate
+	description:executed on template creation
+	@param{Noodles.Template}
+	*/
+	onTemplateCreate : function(Template){
+		Template.endTags = Template.endTags || {};
+		Template.endTags['if'] = true;
+		Template.endTags['loop'] = true;
+	},
+	/*--Coretags--
+	name:onTemplateExecute
+	description:executed when template is run
+	@param{Noodles.Context}
+	@param{Noodles.Template}
+	*/
+	onTemplateExecute : function(Context, Template){},
+	/*--Coretags--
+	name:handleToken
+	description:executed when any tag in "willHandle" is found
+	@param{expression}
+	@param{Noodles.Template}
+	@param{string}
+	*/
+	handleToken : function(Template, expression, tag){
+		swtich(tag){
+			case 'if':
+				return new Conditional(Template,expression);
+			case 'loop':
+				return new Loop(Template,expression);
+			case 'set':
+				return new Set(Template,expression);
+			default:
+				return {skip:true};
+		}
+	},
+	/*--Coretags--
+	name:onExecute
+	description:executed when tag is finally executed
+	@param{object}
+	@param{Noodles.Context}
+	@param{function=}
+	*/
+	onExecute : function(myPlugin,Context,Callback){
+		return myPlugin.execute(Context,Callback);
 	}
-};
+});
+
 /*--module--
 name: Conditional
 description: Conditional execution
@@ -98,11 +121,9 @@ Conditional.prototype.parseConditional = function(Template){
 			if(nenextElse < nextTagThatNeedsEnding && nextElse < nextEndTag || nextTagThatNeedsEnding === -1 && nextEndTag === -1){
 				temp = this.conditions.length - 1;
 				this.conditions[temp].rawString = rawString.slice(0,currentIndex);
-				this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString);
-				this.needs = Noodles.mergeObjectWith(this.needs,this.conditions[t].template.needs);
-				this.sets = Noodles.mergeObjectWith(this.sets,this.conditions[t].template.sets);
-				this.modifies = Noodles.mergeObjectWith(this.modifies,this.conditions[t].template.modifies);
-				Template._leftCount++;
+				this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString, this);
+				
+				Template._leftCount++;//the end tag that's missing
 				temp = rawString.indexOf('}>',currentIndex);
 				this.conditions.push({
 					condition : _parseCondtions(Template,this,rawString.slice(currentIndex,temp))
@@ -129,11 +150,8 @@ Conditional.prototype.parseConditional = function(Template){
 	else{
 		temp = this.conditions.length - 1;
 		this.conditions[temp].rawString = rawString;
-		this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString);
-		this.needs = Noodles.mergeObjectWith(this.needs,this.conditions[t].template.needs);
-		this.sets = Noodles.mergeObjectWith(this.sets,this.conditions[t].template.sets);
-		this.modifies = Noodles.mergeObjectWith(this.modifies,this.conditions[t].template.modifies);
-		Template._leftCount++;
+		this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString,this);
+		Template._leftCount++;//the end tag that's missing
 	}
 	//for the end tag, that isn't there
 	Template._leftCount++;
@@ -151,7 +169,7 @@ var _parseCondtions = Conditional.parseConditions = function(Template,_self,cond
 		conditions = [],
 		orExpression,andExpression;
 		
-	if(/else\s*/i.test(condition)) return true;
+	if(/else(\s+\.*|)$/i.test(condition)) return 'else';
 	
 	if(!(/elseif\s+/i.test(condition))){
 		Noodles.Utilities.warning(Template,'Else statement expected');
@@ -167,16 +185,68 @@ var _parseCondtions = Conditional.parseConditions = function(Template,_self,cond
 		for(var i2 = 0, l2 = orExpression.length; i2 < l2; i2++){
 			andExpression = booleanParser.exec(orExpression[i2]);
 			andExpression[2] = Noodles.parseType(Template,andExpression[2]);
-			_self.needs = Noodles.mergeObjectWith(_self.needs,andExpression[2].needs);
+			_self.needs = Noodles.Utilities.mergeObjectWith(_self.needs,andExpression[2].needs);
 			if(typeof andExpression[3] !== "undefined" && andExpression[5].length > 0){
-				andExpression[5] = Noodles.parseType(Template,andExpression[5]);
-				_self.needs = Noodles.mergeObjectWith(_self.needs,andExpression[5].needs);
+				andExpression[5] = Noodles.Utilities.parseType(Template,andExpression[5]);
+				_self.needs = Noodles.Utilities.mergeObjectWith(_self.needs,andExpression[5].needs);
 			}
 		}
 		conditions.push(andExpression.slice());
 	}
 	return conditions;
 };
+/*--Conditional--
+name: execute
+description: executes the conditionals
+@param {Noodles.Context}
+@param {function=}
+*/
+Conditional.prototype.execute = function(Context,Callback){
+	var i = 0,
+		l = this.conditions.length,
+		bool;
+	while(i < l){
+		if(this.condtions[i].condtion === "else"){
+			return this.conditions[i].template.execute(Context,Callback);
+		} 
+		
+		bool = this.condtions[i].condtion.reduce(function(previous,element){
+			if(previous) return true;
+			return element.reduce(function(prev,current){
+				if(!prev) return false;
+				var left = current[1].length > 0 ? !Context.getObject(current[2]) : Context.getObject(current[2]),
+					right;
+				if(typeof current[3] !== "undefined"){
+					right = current[4].lenght > 0 ? !Context.getObject(current[5]) : Context.getObject(current[5]);
+					switch(current[3]){
+						case '==':
+							return left == right;
+						case '!=':
+							return left != right;
+						case '<':
+							return left < right;
+						case '>':
+							return left < right;
+						case '<=':
+							return left <= right;
+						case '>=':
+							return left >= right;
+						default:
+							return false;
+					}
+				}
+				else{
+					return !!curr[2];
+				}
+			},true);
+		},false);
+		
+		if(bool){	
+			return this.conditions[i].template.execute(Context,Callback);
+		}
+		i++;
+	}
+}
 /*--module--
 name: Set
 description: Set execution
