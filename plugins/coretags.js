@@ -10,9 +10,9 @@ if(typeof process !== "undefined"){
 	});
 }
 
-define('coretags',function(require, exports, module){
+define(function(require, exports, module){
 //get Noodles
-var Noodles = require('noodles');
+var Noodles = require('./../lib/index');
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
@@ -30,6 +30,11 @@ exports.Plugin = new Noodles.Plugin({
 	@type{string}
 	*/
 	pluginName : 'coretags',
+	/*--Coretags--
+	name:browserFriendly
+	description:is this plugin browser friendly?
+	*/
+	browserFriendly: true,
 	/*--Coretags--
 	name:onTemplateCreate
 	description:executed on template creation
@@ -55,7 +60,7 @@ exports.Plugin = new Noodles.Plugin({
 	@param{string}
 	*/
 	handleToken : function(Template, expression, tag){
-		swtich(tag){
+		switch(tag){
 			case 'if':
 				return new Conditional(Template,expression);
 			case 'loop':
@@ -216,8 +221,10 @@ Conditional.prototype.execute = function(Context,Callback){
 				if(!prev) return false;
 				var left = current[1].length > 0 ? !Context.getObject(current[2]) : Context.getObject(current[2]),
 					right;
+					left = typeof left === "string" ? left.towLowerCase() : left;
 				if(typeof current[3] !== "undefined"){
 					right = current[4].lenght > 0 ? !Context.getObject(current[5]) : Context.getObject(current[5]);
+					right = typeof right === "string" ? right.toLowerCase() : right;
 					switch(current[3]){
 						case '==':
 							return left == right;
@@ -226,7 +233,7 @@ Conditional.prototype.execute = function(Context,Callback){
 						case '<':
 							return left < right;
 						case '>':
-							return left < right;
+							return left > right;
 						case '<=':
 							return left <= right;
 						case '>=':
@@ -285,10 +292,12 @@ var Set = function(Template,expression){
 /*--Set--
 name: execute
 description: Set execution
+@param {Noodles.Template}
 @param {Noodles.Context}
 */
-Set.prototype.execute = function(Context){
+Set.prototype.execute = function(Template,Context){
 	this.key.set(Context,this.value);
+	return '';
 };
 
 });
