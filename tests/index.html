@@ -10,7 +10,22 @@
 <body>
 <script src="./../support/require-browser.js"></script>
 <script>
-	require(['./../lib/index.js'],function(){});
+	require(['./../lib/index'],function(Noodles){
+		console.log(Noodles);
+		var rawString = 'This is a very basic template. By <{author}>.';
+		
+		var metaData = 'author = <{firstName}> <{lastName}>';
+		var myTemp = new Noodles.Template({
+			rawString : rawString,
+			metaData:metaData
+		});
+		console.log(myTemp);
+		myTemp.execute({'lastname':'Sweet','firstname':'Nathan'},{
+			onRenderAll:function(string){
+				console.log(string);
+			}
+		});
+	});
 </script>
 </body>
 </html>
