@@ -20,8 +20,10 @@
 			metaData:metaData
 		});
 		console.log(myTemp);
+		var date = Date.now();
 		myTemp.execute({'lastname':'Sweet','firstname':'Nathan'},{
 			onRenderAll:function(string){
+				console.log(Date.now() - date);
 				console.log(string);
 			}
 		});
