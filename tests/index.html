@@ -11,20 +11,25 @@
 <script src="./../support/require-browser.js"></script>
 <script>
 	require(['./../lib/index'],function(Noodles){
-		console.log(Noodles);
-		var rawString = 'This is a very basic template. By <{author}>.';
+		var rawString = 'This is a very basic template. By <{author}>.\n<{if firstname}>His firstname is <{firstname}><{if lastname}>, his last name is <{lastname}><{end}><{end}>';
 		
 		var metaData = 'author = <{firstName}> <{lastName}>';
-		var myTemp = new Noodles.Template({
-			rawString : rawString,
-			metaData:metaData
-		});
-		console.log(myTemp);
+		
+		var myTemp;
 		var date = Date.now();
-		myTemp.execute({'lastname':'Sweet','firstname':'Nathan'},{
-			onRenderAll:function(string){
-				console.log(Date.now() - date);
-				console.log(string);
+		new Noodles.Template({
+			rawString : rawString,
+			metaData:metaData,
+			onFinishCompiling:function(template){
+				console.log('compile time: ',Date.now()-date,'ms.');
+				console.log(template);
+				date = Date.now();
+				template.execute({'lastname':'Sweet','firstname':'Nathan'},{
+					onRenderAll:function(string){
+						console.log(Date.now() - date);
+						console.log(string);
+					}
+				});
 			}
 		});
 	});
