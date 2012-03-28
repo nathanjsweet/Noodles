@@ -91,19 +91,19 @@ description: Conditional execution
 */
 var Conditional = function(Template,expression){
 	this.rawString = Noodles.Utilities.grabToEndSliceRaw(Template, expression,'If');
-	this.conditions = [{
-		condition:_parseCondtions(expression)
-	}];
 	this.needs = {};
-	this.parseConditional(Template);
+	this.conditions = [{
+		condition:_parseCondtions.call(this,Template,expression,true)
+	}];
+	_parseConditional.call(this,Template);
 }
-/*--Conditional--
-name: parseConditional
+/*--module--
+name: parseConditional - private
 description: Parses out the elses and elseifs from the tempalte,
 	to put them into the Conditional class for later use.
 @param {Noodles.Template}
 */
-Conditional.prototype.parseConditional = function(Template){
+_parseConditional = function(Template){
 	var reElse = /<\{else(\s*|\}|if\s+)/i,
 		rawString = this.rawString,
 		endTags = Object.keys(Template.endTags),
@@ -117,24 +117,24 @@ Conditional.prototype.parseConditional = function(Template){
 	if(nextElse !== -1){
 		
 		while(i--){
-			regExpArray.push(new RegExp('<\\{' + endTags[i] + '\s{1}','i'));;
+			regExpArray.push(new RegExp('<\\{' + endTags[i] + '\\s{1}','i'));;
 		}
 		while(nextElse !== -1){
 			nextTagThatNeedsEnding = Noodles.Utilities.searchByIndex(rawString,regExpArray,currentIndex);
 			nextEndTag = Noodles.Utilities.searchByIndex(rawString,reEnd,currentIndex);
 			
-			if(nenextElse < nextTagThatNeedsEnding && nextElse < nextEndTag || nextTagThatNeedsEnding === -1 && nextEndTag === -1){
+			if(nextElse < nextTagThatNeedsEnding && nextElse < nextEndTag || nextTagThatNeedsEnding === -1 && nextEndTag === -1){
 				temp = this.conditions.length - 1;
-				this.conditions[temp].rawString = rawString.slice(0,currentIndex);
+				this.conditions[temp].rawString = rawString.slice(0, nextElse);
 				this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString, this);
 				
-				Template._leftCount++;//the end tag that's missing
-				temp = rawString.indexOf('}>',currentIndex);
+				Template._leftCount++;//the else tag we just sliced
+				temp = rawString.indexOf('}>',nextElse);
 				this.conditions.push({
-					condition : _parseCondtions(Template,this,rawString.slice(currentIndex,temp))
+					condition : _parseCondtions.call(this,Template,rawString.slice(nextElse+2,temp))
 				});
 				rawString = rawString.slice(temp + 2);
-				currentIndex = nenextElse + 1;
+				currentIndex = 0;
 			}
 			else if(nextEndTag > nextTagThatNeedsEnding && nextTagThatNeedsEnding !== -1){
 				currentIndex = nextTagThatNeedsEnding + 1;
@@ -152,78 +152,75 @@ Conditional.prototype.parseConditional = function(Template){
 			nextElse = Noodles.Utilities.searchByIndex(rawString,reElse,currentIndex);
 		}
 	}
-	else{
-		temp = this.conditions.length - 1;
-		this.conditions[temp].rawString = rawString;
-		this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString,this);
-		Template._leftCount++;//the end tag that's missing
-	}
-	//for the end tag, that isn't there
-	Template._leftCount++;
+	temp = this.conditions.length - 1;
+	this.conditions[temp].rawString = rawString;
+	this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString,this);
+	Template._leftCount++;//the end tag that's missing
 };
-/*--Conditional--
-name: parseConditions
+/*--module--
+name: parseConditions - private
 description: Parses the specifics of the conditional statement
 @param {Noodles.Template}
-@param {Conditional}
 @param {string}
 @return {array}
 */
-var _parseCondtions = Conditional.parseConditions = function(Template,_self,condition){
-	var booleanParser = /(?:\s*)(!?)([^<>=!\s]+)(?:\s*)(==|!=|<|>|<=|>=)?(?:\s*)(!?)([^<>=!\s]+)(?:\s*)/,
+var _parseCondtions = Conditional.parseConditions = function(Template,condition,first){
+	var booleanParser = /(?:\s*)(!?)([^<>=!\s]+)(?:\s*)(==|!=|<|>|<=|>=)?(?:\s*)(!?)([^<>=!\s]*)(?:\s*)/,
 		conditions = [],
+		andStack = [],
 		orExpression,andExpression;
 		
 	if(/else(\s+\.*|)$/i.test(condition)) return 'else';
 	
-	if(!(/elseif\s+/i.test(condition))){
+	if(!(/elseif\s+/i.test(condition)) && !first){
 		Noodles.Utilities.warning(Template,'Else statement expected');
 		return false;
 	}
-	condition = /elseif\s+(.+)/i.exec(expression)[1];
+	condition = first ?  /if\s+(.+)/i.exec(condition)[1] : /elseif\s+(.+)/i.exec(condition)[1];
 	condition = condition.split(/\s+or\s+/i);
-
+	
 	for(var i = 0, l = condition.length; i < l; i++){
-		orExpression = condition[i];
-		orExpression = orExpression.split(/\s+and\s+/i);
-		andExpression = []
+		orExpression = condition[i].split(/\s+and\s+/i);
+		andStack = [];
 		for(var i2 = 0, l2 = orExpression.length; i2 < l2; i2++){
 			andExpression = booleanParser.exec(orExpression[i2]);
-			andExpression[2] = Noodles.parseType(Template,andExpression[2]);
-			_self.needs = Noodles.Utilities.mergeObjectWith(_self.needs,andExpression[2].needs);
+			andExpression[2] = Noodles.Utilities.parseType(Template,andExpression[2]);
+			this.needs = Noodles.Utilities.mergeObjectWith(this.needs,andExpression[2].needs);
 			if(typeof andExpression[3] !== "undefined" && andExpression[5].length > 0){
 				andExpression[5] = Noodles.Utilities.parseType(Template,andExpression[5]);
-				_self.needs = Noodles.Utilities.mergeObjectWith(_self.needs,andExpression[5].needs);
+				this.needs = Noodles.Utilities.mergeObjectWith(this.needs,andExpression[5].needs);
 			}
+			andStack.push(andExpression);
 		}
-		conditions.push(andExpression.slice());
+		conditions.push(andStack.slice());
 	}
 	return conditions;
 };
 /*--Conditional--
 name: execute
 description: executes the conditionals
+@param {Noodles.Template}
 @param {Noodles.Context}
 @param {function=}
 */
-Conditional.prototype.execute = function(Context,Callback){
+Conditional.prototype.execute = function(Template,Context,Callback){
 	var i = 0,
 		l = this.conditions.length,
 		bool;
 	while(i < l){
-		if(this.condtions[i].condtion === "else"){
-			return this.conditions[i].template.execute(Context,Callback);
+		if(this.conditions[i].condition === "else"){
+			return this.conditions[i].template.execute(Template,Context,Callback);
 		} 
 		
-		bool = this.condtions[i].condtion.reduce(function(previous,element){
+		bool = this.conditions[i].condition.reduce(function(previous,element){
 			if(previous) return true;
 			return element.reduce(function(prev,current){
 				if(!prev) return false;
-				var left = current[1].length > 0 ? !Context.getObject(current[2]) : Context.getObject(current[2]),
+				var left = current[1].length > 0 ? !current[2].execute(Template,Context,Callback) : current[2].execute(Template,Context,Callback),
 					right;
-					left = typeof left === "string" ? left.towLowerCase() : left;
+					left = typeof left === "string" ? left.toLowerCase() : left;
 				if(typeof current[3] !== "undefined"){
-					right = current[4].lenght > 0 ? !Context.getObject(current[5]) : Context.getObject(current[5]);
+					right = current[4].lenght > 0 ? !current[5].execute(Template,Context,Callback) : current[5].execute(Template,Context,Callback);
 					right = typeof right === "string" ? right.toLowerCase() : right;
 					switch(current[3]){
 						case '==':
@@ -243,13 +240,13 @@ Conditional.prototype.execute = function(Context,Callback){
 					}
 				}
 				else{
-					return !!curr[2];
+					return !!left;
 				}
 			},true);
 		},false);
 		
 		if(bool){	
-			return this.conditions[i].template.execute(Context,Callback);
+			return this.conditions[i].template.execute(Template,Context,Callback);
 		}
 		i++;
 	}
@@ -277,7 +274,7 @@ var Set = function(Template,expression){
 	this.key = temp;
 	
 	if(this.key.order.length > 1){
-		this.needs = Noodles.mergeObjectWith(this.needs,this.key.needs);
+		this.needs = Noodles.Utilities.mergeObjectWith(this.needs,this.key.needs);
 	}
 	else{
 		this.sets = {};
