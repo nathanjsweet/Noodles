@@ -1,13 +1,8 @@
 //Require JS for node
 //otherwise just make sure that the browser version loads before this file.
 if(typeof process !== "undefined"){
-	//if node
-	var requirejs = require('require-node');
+	var requirejs = require('requirejs');
 	var define = requirejs.define;
-	requirejs.config({
-	    nodeRequire: require,
-		baseUrl: __dirname,
-	});
 }
 
 define(function(require, exports, module){
