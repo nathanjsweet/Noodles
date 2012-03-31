@@ -3,11 +3,12 @@
 if(typeof process !== "undefined"){
 	var requirejs = require('requirejs');
 	var define = requirejs.define;
+	var _Noodles = require('./../lib');
 }
 
 define(function(require, exports, module){
-//get Noodles
-var Noodles = require('./../lib/index');
+//get Noodles, the blank concat is to preven requirejs from getting to smart on us.
+var Noodles = typeof _Noodles === "undefined" ? require(''+'./../lib/browser-index') : _Noodles;
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
