@@ -24,12 +24,12 @@ exports.Plugin = new Noodles.Plugin({
 	description:array of tags that the coretags plugin will handle
 	@type{array}
 	*/
-	willHandle :  ['if','loop','set'],
+	willHandle :  ['if'],
 	/*--Coretags--
 	name:pluginName
 	@type{string}
 	*/
-	pluginName : 'coretags',
+	pluginName : 'iftag',
 	/*--Coretags--
 	name:browserFriendly
 	description:is this plugin browser friendly?
@@ -43,7 +43,6 @@ exports.Plugin = new Noodles.Plugin({
 	onTemplateCreate : function(Template){
 		Template.endTags = Template.endTags || {};
 		Template.endTags['if'] = true;
-		Template.endTags['loop'] = true;
 	},
 	/*--Coretags--
 	name:onTemplateExecute
@@ -63,23 +62,9 @@ exports.Plugin = new Noodles.Plugin({
 		switch(tag){
 			case 'if':
 				return new Conditional(Template,expression);
-			case 'loop':
-				return new Loop(Template,expression);
-			case 'set':
-				return new Set(Template,expression);
 			default:
 				return {skip:true};
 		}
-	},
-	/*--Coretags--
-	name:onExecute
-	description:executed when tag is finally executed
-	@param{object}
-	@param{Noodles.Context}
-	@param{function=}
-	*/
-	onExecute : function(myPlugin,Context,Callback){
-		return myPlugin.execute(Context,Callback);
 	}
 });
 
@@ -187,6 +172,7 @@ var _parseCondtions = Conditional.parseConditions = function(Template,condition,
 			andExpression[2] = Noodles.Utilities.parseType(Template,andExpression[2]);
 			this.needs = Noodles.Utilities.mergeObjectWith(this.needs,andExpression[2].needs);
 			if(typeof andExpression[3] !== "undefined" && andExpression[5].length > 0){
+				andExpression[3] = andExpression[3].toLowerCase();
 				andExpression[5] = Noodles.Utilities.parseType(Template,andExpression[5]);
 				this.needs = Noodles.Utilities.mergeObjectWith(this.needs,andExpression[5].needs);
 			}
@@ -235,6 +221,14 @@ Conditional.prototype.execute = function(Template,Context,Callback){
 							return left <= right;
 						case '>=':
 							return left >= right;
+						case 'contains':
+							return typeof left === "string" && typeof right === "string" ? left.indexOf(right) > -1 : false;
+						case 'startswith':
+							return typeof left === "string" && typeof right === "string" ? new RegExp('^' + right).test(left) : false;
+						case 'endswith':
+							return typeof left === "string" && typeof right === "string" ? new RegExp(right + '$').test(left) : false;
+						case 'matches':
+							return typeof left === "string" && right.constructor.name === "RegExp" ? right.test(left) : false;
 						default:
 							return false;
 					}
@@ -250,51 +244,6 @@ Conditional.prototype.execute = function(Template,Context,Callback){
 		}
 		i++;
 	}
-}
-/*--module--
-name: Set
-description: Set execution
-@param {Noodles.Template}
-@param {expression}
-*/
-var Set = function(Template,expression){
-	this.needs = {};
-	expression = expression.split(' ');
-	if(expression.length < 4){
-		this.skip = true;
-		Noodles.Utilities.warning(Template,'Set tag has bad syntax');
-		return;
-	}
-	var temp = Noodles.parseType(Template,expression[1]);
-	if(!(temp instanceof Noodles.Object)){
-		this.skip = true;
-		Noodles.Utilities.warning(Template,'Set tag has bad syntax');
-		return;
-	}
-	this.key = temp;
-	
-	if(this.key.order.length > 1){
-		this.needs = Noodles.Utilities.mergeObjectWith(this.needs,this.key.needs);
-	}
-	else{
-		this.sets = {};
-		this.sets[this.key.order[0]] = true;
-	}
-	this.modifies = {};
-	this.modifies[this.key.order[0]] = true;
-	
-	this.value = Noodles.parseType(Template,expression[3]);
-	this.needs = Noodles.mergeObjectWith(this.needs,this.value.needs);
-};
-/*--Set--
-name: execute
-description: Set execution
-@param {Noodles.Template}
-@param {Noodles.Context}
-*/
-Set.prototype.execute = function(Template,Context){
-	this.key.set(Context,this.value);
-	return '';
 };
 
 });
