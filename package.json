@@ -1,11 +1,11 @@
 {
-    "name": "Noodles",
+    "name": "noodles",
     "description": "High Performance templating language designed to be human language agnostic (mostly)",
     "version": "0.1",
     "homepage" : "https://github.com/nathanjsweet/Noodles",
     "engines": {"node": ">= 0.2.0"},
     "author": "Nathan Sweet <nathanjsweet@gmail.com>",
-    "main": "lib/index.js",
+    "main": "./lib/index.js",
     "repository" : {
         "type" : "git",
          "url" : "git://github.com/nathanjsweet/Noodles.git"
