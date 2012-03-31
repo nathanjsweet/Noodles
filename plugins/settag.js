@@ -106,8 +106,8 @@ description: Set execution
 @param {Noodles.Context}
 @param {function=}
 */
-Set.prototype.execute = function(Template,Context,Callback){
-	this.key.set(Template,Context,this.value,Callback);
+Set.prototype.execute = function(Template,Context){
+	this.key.set(Template,Context,this.value);
 	return '';
 };
 
