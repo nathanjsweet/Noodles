@@ -6,6 +6,8 @@
     "engines": {"node": ">= 0.2.0"},
     "author": "Nathan Sweet <nathanjsweet@gmail.com>",
     "main": "./lib/index.js",
+	"dependencies":["requirejs"],
+	"keywords":["templating","noodles"]
     "repository" : {
         "type" : "git",
          "url" : "git://github.com/nathanjsweet/Noodles.git"
@@ -13,5 +15,5 @@
     "licenses": [{
         "type": "GPLv3",
         "url": "http://www.gnu.org/licenses/gpl-3.0.txt"}
-    ]
+    }]
 }
