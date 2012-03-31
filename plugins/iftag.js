@@ -217,11 +217,11 @@ Conditional.prototype.execute = function(Template,Context,Callback){
 			if(previous) return true;
 			return element.reduce(function(prev,current){
 				if(!prev) return false;
-				var left = current[1].length > 0 ? !current[2].execute(Template,Context,Callback) : current[2].execute(Template,Context,Callback),
+				var left = current[1].length > 0 ? !current[2].execute(Template,Context) : current[2].execute(Template,Context),
 					right;
 					left = typeof left === "string" ? left.toLowerCase() : left;
 				if(typeof current[3] !== "undefined"){
-					right = current[4].lenght > 0 ? !current[5].execute(Template,Context,Callback) : current[5].execute(Template,Context,Callback);
+					right = current[4].lenght > 0 ? !current[5].execute(Template,Context) : current[5].execute(Template,Context);
 					right = typeof right === "string" ? right.toLowerCase() : right;
 					switch(current[3]){
 						case '==':
@@ -255,7 +255,16 @@ Conditional.prototype.execute = function(Template,Context,Callback){
 		},false);
 		
 		if(bool){	
-			return this.conditions[i].template.execute(Template,Context,Callback);
+			if(this.needsCallback){
+				if(this.conditions[i].template.needsCallback){
+					this.conditions[i].template.execute(Template,Context,Callback);
+				}
+				else{
+					Callback(this.conditions[i].template.execute(Template,Context));
+				}
+				break;
+			}
+			return this.conditions[i].template.execute(Template,Context);
 		}
 		i++;
 	}
