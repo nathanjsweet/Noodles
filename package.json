@@ -1,19 +1,23 @@
 {
-    "name": "noodles",
-    "description": "High Performance templating language designed to be human language agnostic (mostly)",
-    "version": "0.1",
-    "homepage" : "https://github.com/nathanjsweet/Noodles",
-    "engines": {"node": ">= 0.2.0"},
-    "author": "Nathan Sweet <nathanjsweet@gmail.com>",
-    "main": "./lib/index.js",
-	"dependencies":["requirejs"],
-	"keywords":["templating","noodles"]
-    "repository" : {
-        "type" : "git",
-         "url" : "git://github.com/nathanjsweet/Noodles.git"
-    },
-    "licenses": [{
-        "type": "GPLv3",
-        "url": "http://www.gnu.org/licenses/gpl-3.0.txt"}
-    }]
+  "author": "Nathan Sweet <nathanjsweet@gmail.com> (nathansweet.me)",
+  "name": "noodles",
+  "description": "High Performance templating language",
+  "version": "0.1.0",
+  "homepage": "https://github.com/nathanjsweet/Noodles",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nathanjsweet/Noodles.git"
+  },
+  "main": "./lib/index",
+  "scripts": {
+    "test": "var noodles = require('noodles');"
+  },
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "dependencies": {
+	"requirejs":">=1.0.7"
+
+	},
+  "devDependencies": {}
 }
