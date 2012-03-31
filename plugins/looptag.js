@@ -119,11 +119,12 @@ description: Loop execution
 */
 Loop.prototype.execute = function(Template,Context,Callback){
 	var _object = this.object.execute(Template,Context,true),
-		keys = Object.keys(_object),
+		keys = _object !== "" ? Object.keys(_object): "",
 		l = keys.length,
 		i = 0,
 		collection = [],
 		key;
+	if(keys === "") return "";
 	while(i < l){
 		key = keys[i];
 		this.name.set(Template,Context,key);
