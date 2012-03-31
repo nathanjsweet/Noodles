@@ -88,6 +88,9 @@ description: Parses out the elses and elseifs from the tempalte,
 	to put them into the Conditional class for later use.
 @param {Noodles.Template}
 */
+//	'<{if firstname}>His firstname is <{firstname}><{else}>We don\'t know his firstname<{end}>.',
+//	'<{if middlename}>, his middlename is <{middlename}><{end}>',
+//	' his last name is <{lastname}>',
 _parseConditional = function(Template){
 	var reElse = /<\{else(\s*|\}|if\s+)/i,
 		rawString = this.rawString,
@@ -95,20 +98,45 @@ _parseConditional = function(Template){
 		currentIndex = 0,
 		regExpArray = [],
 		reEnd = /<\{end(\s|\}){1}/i,
+		reIf = [/<\{if\s+/i],
+		ifs = 0,
+		endsTags = [],
 		i = endTags.length,
-		nextTagThatNeedsEnding, nextEndTag,nextElse,temp;
+		nextTagThatNeedsEnding, nextEndTag,nextElse,nextIf,temp;
 	
 	nextElse = Noodles.Utilities.searchByIndex(rawString,reElse,currentIndex);
 	if(nextElse !== -1){
 		
 		while(i--){
+			if(endTags[i].toLowerCase() === 'if') continue;
 			regExpArray.push(new RegExp('<\\{' + endTags[i] + '\\s{1}','i'));;
 		}
 		while(nextElse !== -1){
 			nextTagThatNeedsEnding = Noodles.Utilities.searchByIndex(rawString,regExpArray,currentIndex);
 			nextEndTag = Noodles.Utilities.searchByIndex(rawString,reEnd,currentIndex);
-			
-			if(nextElse < nextTagThatNeedsEnding && nextElse < nextEndTag || nextTagThatNeedsEnding === -1 && nextEndTag === -1){
+			nextIf = Noodles.Utilities.searchByIndex(rawString,reIf,currentIndex);
+			if(nextIf !== -1 && nextIf < nextEndTag && (nextIf < nextElse || nextElse === -1) && (nextIf <= nextTagThatNeedsEnding || nextTagThatNeedsEnding === -1)){
+				ifs++;
+				endsTags.push('if');
+				currentIndex = nextIf + 1;
+				nextIf = 0;
+			}
+			else if(nextTagThatNeedsEnding !== -1 && nextTagThatNeedsEnding < nextEndTag){
+				endTags.push('unknown');
+				currentIndex = nextTagThatNeedsEnding + 1;
+				nextTagThatNeedsEnding = 0;
+			}
+			else if(nextEndTag !== -1){
+				temp = endsTags.pop();
+				currentIndex = nextEndTag + 1;
+				if(temp === 'if') ifs--;
+			}
+			else if(nextTagThatNeedsEnding !== -1){
+				this.skip = true;
+				Noodles.Utilities.warning(Template,'If tag not ended properly');
+				break;
+			}
+			if(ifs === 0 && nextElse !== -1 && nextElse >= currentIndex){
 				temp = this.conditions.length - 1;
 				this.conditions[temp].rawString = rawString.slice(0, nextElse);
 				this.conditions[temp].template = Noodles.Utilities.createSubTemplate(Template,this.conditions[temp].rawString, this);
@@ -120,19 +148,6 @@ _parseConditional = function(Template){
 				});
 				rawString = rawString.slice(temp + 2);
 				currentIndex = 0;
-			}
-			else if(nextEndTag > nextTagThatNeedsEnding && nextTagThatNeedsEnding !== -1){
-				currentIndex = nextTagThatNeedsEnding + 1;
-			}
-			else if(nextEndTag !== -1){
-				currentIndex = nextEndTag + 1;
-			}
-			else {
-				if(needsEnding !== 0){
-					this.skip = true;
-					break;
-					Noodles.Utilities.warning(Template,'Expression tag not ended properly');
-				}
 			}
 			nextElse = Noodles.Utilities.searchByIndex(rawString,reElse,currentIndex);
 		}
