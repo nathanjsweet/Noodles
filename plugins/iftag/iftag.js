@@ -8,7 +8,7 @@ if(typeof process !== "undefined"){
 
 define(function(require, exports, module){
 //get Noodles, the blank concat is to preven requirejs from getting too smart on us.
-var Noodles = typeof _Noodles === "undefined" ? require(''+'./../lib/browser-index') : _Noodles;
+var Noodles = typeof _Noodles === "undefined" ? require(''+'./../../lib/browser-index') : _Noodles;
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
