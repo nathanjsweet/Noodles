@@ -18,9 +18,12 @@ exports.Plugin = new Noodles.Plugin({
 	/*--Coretags--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
-	@type{array}
+	@param{Noodles.Template}
+	@return {array}
 	*/
-	willHandle :  ['loop'],
+	willHandle : function(Template){
+		return [Template.language.tag('loop')];
+	},
 	/*--Coretags--
 	name:pluginName
 	@type{string}
@@ -45,7 +48,7 @@ exports.Plugin = new Noodles.Plugin({
 	*/
 	onTemplateCreate : function(Template){
 		Template.endTags = Template.endTags || {};
-		Template.endTags['loop'] = true;
+		Template.endTags[Template.language.tag('loop')] = true;
 	},
 	/*--Coretags--
 	name:handleToken
@@ -56,7 +59,7 @@ exports.Plugin = new Noodles.Plugin({
 	*/
 	handleToken : function(Template, expression, tag){
 		switch(tag){
-			case 'loop':
+			case Template.language.tag('loop'):
 				return new Loop(Template,expression);
 			default:
 				return {skip:true};
@@ -70,7 +73,7 @@ description: Loop object
 @param {expression}
 */
 var Loop = function(Template,expression){
-	this.rawString = Noodles.Utilities.grabToEndSliceRaw(Template, expression,'Loop');
+	this.rawString = Noodles.Utilities.grabToEndSliceRaw(Template, expression,Template.language.tag('Loop'));
 	this.needs = {};
 	
 	expression = expression.split(' ');
@@ -90,9 +93,9 @@ var Loop = function(Template,expression){
 
 	this.template = Noodles.Utilities.createSubTemplate(Template,this.rawString, this);
 	Template._leftCount++;//the end tag we sliced above
-	this.name = new Noodles.Object(this.template,'name');
-	this.value = new Noodles.Object(this.template,'value');
-	this.index = new Noodles.Object(this.template,'__index');
+	this.name = new Noodles.Object(this.template,Template.language.other('name'));
+	this.value = new Noodles.Object(this.template,Template.language.other('value'));
+	this.index = new Noodles.Object(this.template,'__' + Template.language.other('index'));
 	this.setExists = false;
 	if(expression.length >= 4){
 		this.setObject = new Noodles.Object(this.template,expression[3]);

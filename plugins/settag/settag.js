@@ -18,9 +18,12 @@ exports.Plugin = new Noodles.Plugin({
 	/*--Coretags--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
-	@type{array}
+	@param{Noodles.Template}
+	@return {array}
 	*/
-	willHandle :  ['set'],
+	willHandle : function(Template){
+		return [Template.language.tag('set')];
+	},
 	/*--Coretags--
 	name:pluginName
 	@type{string}
@@ -47,13 +50,13 @@ exports.Plugin = new Noodles.Plugin({
 	/*--Coretags--
 	name:handleToken
 	description:executed when any tag in "willHandle" is found
-	@param{expression}
 	@param{Noodles.Template}
+	@param{string}
 	@param{string}
 	*/
 	handleToken : function(Template, expression, tag){
 		switch(tag){
-			case 'set':
+			case Template.language.tag('set'):
 				return new Set(Template,expression);
 			default:
 				return {skip:true};

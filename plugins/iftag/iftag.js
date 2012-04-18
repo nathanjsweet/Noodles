@@ -18,9 +18,12 @@ exports.Plugin = new Noodles.Plugin({
 	/*--Coretags--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
-	@type{array}
+	@param{Noodles.Template}
+	@return {array}
 	*/
-	willHandle :  ['if'],
+	willHandle : function(Template){
+		return [Template.language.tag('if')];
+	},
 	/*--Coretags--
 	name:pluginName
 	@type{string}
@@ -38,7 +41,7 @@ exports.Plugin = new Noodles.Plugin({
 	*/
 	onTemplateCreate : function(Template){
 		Template.endTags = Template.endTags || {};
-		Template.endTags['if'] = true;
+		Template.endTags[Template.language.tag('if')] = true;
 	},
 	/*--Coretags--
 	name:onTemplateExecute
@@ -56,7 +59,7 @@ exports.Plugin = new Noodles.Plugin({
 	*/
 	handleToken : function(Template, expression, tag){
 		switch(tag){
-			case 'if':
+			case Template.language.tag('if'):
 				return new Conditional(Template,expression);
 			default:
 				return {skip:true};
@@ -71,7 +74,7 @@ description: Conditional execution
 @param {expression}
 */
 var Conditional = function(Template,expression){
-	this.rawString = Noodles.Utilities.grabToEndSliceRaw(Template, expression,'If');
+	this.rawString = Noodles.Utilities.grabToEndSliceRaw(Template, expression,Template.language.tag('If'));
 	this.needs = {};
 	this.conditions = [{
 		condition:_parseCondtions.call(this,Template,expression,true)
@@ -88,15 +91,15 @@ description: Parses out the elses and elseifs from the tempalte,
 //	'<{if middlename}>, his middlename is <{middlename}><{end}>',
 //	' his last name is <{lastname}>',
 _parseConditional = function(Template){
-	var reElse = /<\{else(\s*|\}|if\s+)/i,
+	var reElse = new RegExp('<\\{' + Template.language.tag('else') + '(\\s*|\\}|' + Template.language.tag('if') + '\\s+)','i'),
 		rawString = this.rawString,
 		endTags = Object.keys(Template.endTags),
 		currentIndex = 0,
 		regExpArray = [],
-		reEnd = /<\{end(\s|\}){1}/i,
-		reIf = [/<\{if\s+/i],
+		reEnd = new RegExp('<\\{' + Template.language.tag('end') + '(\\s|\\}){1}','i'),
+		reIf = [new RegExp('<\\{' + Template.language.tag('if') + '\\s+','i')],
 		ifs = 0,
-		endsTags = [],
+		endingTags = [],
 		i = endTags.length,
 		nextTagThatNeedsEnding, nextEndTag,nextElse,nextIf,temp;
 	
@@ -104,8 +107,8 @@ _parseConditional = function(Template){
 	if(nextElse !== -1){
 		
 		while(i--){
-			if(endTags[i].toLowerCase() === 'if') continue;
-			regExpArray.push(new RegExp('<\\{' + endTags[i] + '\\s{1}','i'));;
+			if(endTags[i].toLowerCase() ===  Template.language.tag('if')) continue;
+			regExpArray.push(new RegExp('<\\{' +  endTags[i] + '\\s{1}','i'));;
 		}
 		while(nextElse !== -1){
 			nextTagThatNeedsEnding = Noodles.Utilities.searchByIndex(rawString,regExpArray,currentIndex);
@@ -113,17 +116,17 @@ _parseConditional = function(Template){
 			nextIf = Noodles.Utilities.searchByIndex(rawString,reIf,currentIndex);
 			if(nextIf !== -1 && nextIf < nextEndTag && (nextIf < nextElse || nextElse === -1) && (nextIf <= nextTagThatNeedsEnding || nextTagThatNeedsEnding === -1)){
 				ifs++;
-				endsTags.push('if');
+				endingTags.push('if');
 				currentIndex = nextIf + 1;
 				nextIf = 0;
 			}
 			else if(nextTagThatNeedsEnding !== -1 && nextTagThatNeedsEnding < nextEndTag){
-				endTags.push('unknown');
+				endingTags.push('unknown');
 				currentIndex = nextTagThatNeedsEnding + 1;
 				nextTagThatNeedsEnding = 0;
 			}
 			else if(nextEndTag !== -1){
-				temp = endsTags.pop();
+				temp = endingTags.pop();
 				currentIndex = nextEndTag + 1;
 				if(temp === 'if') ifs--;
 			}
@@ -140,7 +143,7 @@ _parseConditional = function(Template){
 				Template._leftCount++;//the else tag we just sliced
 				temp = rawString.indexOf('}>',nextElse);
 				this.conditions.push({
-					condition : _parseCondtions.call(this,Template,rawString.slice(nextElse+2,temp))
+					condition : _parseCondtions.call(this,Template,rawString.slice(nextElse + 2,temp))
 				});
 				rawString = rawString.slice(temp + 2);
 				currentIndex = 0;
@@ -164,30 +167,24 @@ var _parseCondtions = Conditional.parseConditions = function(Template,condition,
 	var booleanParser = /(?:\s*)(!?)([^<>=!\s]+)(?:\s*)(==|!=|<|>|<=|>=)?(?:\s*)(!?)([^<>=!\s]*)(?:\s*)/,
 		conditions = [],
 		andStack = [],
+		reAnd = new RegExp('\\s+' + Template.language.tag('and') + '\\s+','i'),
 		orExpression,andExpression;
 		
-	if(/else(\s+\.*|)$/i.test(condition)) return 'else';
+	if(new RegExp(Template.language.tag('else') + '(\\s+\\.*|)$','i').test(condition)) return 'else';
 	
-	if(!(/elseif\s+/i.test(condition)) && !first){
+	if(!(new RegExp(Template.language.tag('elseif') + '\s+','i').test(condition)) && !first){
 		Noodles.Utilities.warning(Template,'Else statement expected');
 		return false;
 	}
-	condition = first ?  /if\s+(.+)/i.exec(condition)[1] : /elseif\s+(.+)/i.exec(condition)[1];
-	condition = condition.split(/\s+or\s+/i);
+	condition = first ?  /if\s+(.+)/i.exec(condition)[1] : new RegExp(Template.language.tag('elseif') + '\\s+(.+)','i').exec(condition)[1];
+	condition = condition.split(new RegExp('\\s+' + Template.language.other('or') + '\\s+','i'));
 	
 	for(var i = 0, l = condition.length; i < l; i++){
-		orExpression = condition[i].split(/\s+and\s+/i);
+		orExpression = condition[i].split(reAnd);
 		andStack = [];
 		for(var i2 = 0, l2 = orExpression.length; i2 < l2; i2++){
 			andExpression = booleanParser.exec(orExpression[i2]);
-			andExpression[2] = Noodles.Utilities.parseType(Template,andExpression[2]);
-			this.needs = Noodles.Utilities.mergeObjectWith(this.needs,andExpression[2].needs);
-			if(typeof andExpression[3] !== "undefined" && andExpression[5].length > 0){
-				andExpression[3] = andExpression[3].toLowerCase();
-				andExpression[5] = Noodles.Utilities.parseType(Template,andExpression[5]);
-				this.needs = Noodles.Utilities.mergeObjectWith(this.needs,andExpression[5].needs);
-			}
-			andStack.push(andExpression);
+			andStack.push(new Condition(andExpression,this,Template));
 		}
 		conditions.push(andStack.slice());
 	}
@@ -209,44 +206,11 @@ Conditional.prototype.execute = function(Template,Context,Callback){
 			return this.conditions[i].template.execute(Template,Context,Callback);
 		} 
 		
-		bool = this.conditions[i].condition.reduce(function(previous,element){
+		bool = this.conditions[i].condition.reduce(function(previous,current){
 			if(previous) return true;
-			return element.reduce(function(prev,current){
+			return current.reduce(function(prev,curr){
 				if(!prev) return false;
-				var left = current[1].length > 0 ? !current[2].execute(Template,Context) : current[2].execute(Template,Context),
-					right;
-					left = typeof left === "string" ? left.toLowerCase() : left;
-				if(typeof current[3] !== "undefined"){
-					right = current[4].lenght > 0 ? !current[5].execute(Template,Context) : current[5].execute(Template,Context);
-					right = typeof right === "string" ? right.toLowerCase() : right;
-					switch(current[3]){
-						case '==':
-							return left == right;
-						case '!=':
-							return left != right;
-						case '<':
-							return left < right;
-						case '>':
-							return left > right;
-						case '<=':
-							return left <= right;
-						case '>=':
-							return left >= right;
-						case 'contains':
-							return typeof left === "string" && typeof right === "string" ? left.indexOf(right) > -1 : false;
-						case 'startswith':
-							return typeof left === "string" && typeof right === "string" ? new RegExp('^' + right).test(left) : false;
-						case 'endswith':
-							return typeof left === "string" && typeof right === "string" ? new RegExp(right + '$').test(left) : false;
-						case 'matches':
-							return typeof left === "string" && right.constructor.name === "RegExp" ? right.test(left) : false;
-						default:
-							return false;
-					}
-				}
-				else{
-					return !!left;
-				}
+				return curr.execute(Template,Context);
 			},true);
 		},false);
 		
@@ -263,6 +227,84 @@ Conditional.prototype.execute = function(Template,Context,Callback){
 			return this.conditions[i].template.execute(Template,Context);
 		}
 		i++;
+	}
+};
+/*--module--
+name: Condition
+description: Condition
+@param {array}
+@param {Conditional}
+@param {Noodles.Template}
+*/
+var Condition = function(condition,Conditional,Template){
+	this.leftSide = Noodles.Utilities.parseType(Template,condition[2]);
+	Conditional.needs = Noodles.Utilities.mergeObjectWith(Conditional.needs,this.leftSide.needs);
+	this.leftNegate = condition[1].length > 0;
+	this.super = false;
+	if(typeof condition[3] !== "undefined" && condition[5].length > 0){
+		switch(condition[3]){
+			case Template.language.other('contains'):
+				this.expression = 'contains';
+				break;
+			case Template.language.other('startswith'):
+				this.expression = 'startswith';
+				break;
+			case Template.language.other('endswith'):
+				this.expression = 'endswith';
+				break;
+			case Template.language.other('matches'):
+				this.expression = 'matches';
+			default:
+				this.expression = condition[3].toLowerCase();
+		}
+		this.rightSide = Noodles.Utilities.parseType(Template,condition[5]);
+		this.rightNegate = condition[4].length > 0
+		Conditional.needs = Noodles.Utilities.mergeObjectWith(Conditional.needs,this.rightSide.needs);
+	}
+	else{
+		this.expression = false;
+	}
+};
+/*--Condition--
+name: execute
+description: Condition executable
+@param {Noodles.Template}
+@param {Noodles.Context}
+*/
+Condition.prototype.execute = function(Template,Context){
+	var left = this.leftNegate ? !this.leftSide.execute(Template,Context) : this.leftSide.execute(Template,Context),
+		right;
+		left = typeof left === "string" ? left.toLowerCase() : left;
+	if(this.expression){
+		right = this.rightNegate ? !this.rightSide.execute(Template,Context) : this.rightSide.execute(Template,Context);
+		right = typeof right === "string" ? right.toLowerCase() : right;
+		switch(this.expression){
+			case '==':
+				return left == right;
+			case '!=':
+				return left != right;
+			case '<':
+				return left < right;
+			case '>':
+				return left > right;
+			case '<=':
+				return left <= right;
+			case '>=':
+				return left >= right;
+			case 'contains':
+				return typeof left === "string" && typeof right === "string" ? left.indexOf(right) > -1 : false;
+			case 'startswith':
+				return typeof left === "string" && typeof right === "string" ? new RegExp('^' + right).test(left) : false;
+			case 'endswith':
+				return typeof left === "string" && typeof right === "string" ? new RegExp(right + '$').test(left) : false;
+			case 'matches':
+				return typeof left === "string" && right.constructor.name === "RegExp" ? right.test(left) : false;
+			default:
+				return false;
+		}
+	}
+	else{
+		return !!left;
 	}
 };
 
