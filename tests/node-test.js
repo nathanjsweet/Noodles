@@ -7,7 +7,7 @@ var rawString = ['This is a very basic template. By <{author}>.',
 	' his last name is <{lastname}>',
 '<{end}>',
 '<{if authors}>',
-'<{loop !authors}>',
+'<{loop authors}>',
 	'index: <{__index}>',
 	'name:<{name}>',
 	'value:<{value}>',
@@ -22,7 +22,7 @@ var time = Date.now(),
 new Noodles.Template({
 	rawString : rawString,
 	metaData:metaData,
-	onFinishCompiling:function(template){s
+	onFinishCompiling:function(template){
 		time = Date.now() - time;
 		myTemp = template;
 		console.log('compile time: ',time,'ms');
