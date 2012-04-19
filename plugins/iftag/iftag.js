@@ -87,9 +87,6 @@ description: Parses out the elses and elseifs from the tempalte,
 	to put them into the Conditional class for later use.
 @param {Noodles.Template}
 */
-//	'<{if firstname}>His firstname is <{firstname}><{else}>We don\'t know his firstname<{end}>.',
-//	'<{if middlename}>, his middlename is <{middlename}><{end}>',
-//	' his last name is <{lastname}>',
 _parseConditional = function(Template){
 	var reElse = new RegExp('<\\{' + Template.language.tag('else') + '(\\s*|\\}|' + Template.language.tag('if') + '\\s+)','i'),
 		rawString = this.rawString,

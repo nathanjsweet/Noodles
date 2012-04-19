@@ -15,7 +15,7 @@ description:Plugin Class implementation
 @type{Noodles.Plugin}
 */
 exports.Plugin = new Noodles.Plugin({
-	/*--Coretags--
+	/*--looptag--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
 	@param{Noodles.Template}
@@ -24,23 +24,24 @@ exports.Plugin = new Noodles.Plugin({
 	willHandle : function(Template){
 		return [Template.language.tag('loop')];
 	},
-	/*--Coretags--
+	/*--looptag--
 	name:pluginName
 	@type{string}
 	*/
 	pluginName : 'looptag',
-	/*--Coretags--
+	/*--looptag--
 	name:browserFriendly
 	description:is this plugin browser friendly?
 	*/
 	browserFriendly: true,
-	/*--Coretags--
-	name:onTemplateCreate
-	description:executed on template creation
+	/*--looptag--
+	name:onTemplateExecute
+	description:executed on template run.
+	@param {Noodles.Context}
 	@param{Noodles.Template}
 	*/
-	onTemplateCreate : function(Template){},
-	/*--Coretags--
+	onTemplateExecute : function(Context,Template){},
+	/*--looptag--
 	name:onTemplateExecute
 	description:executed when template is run
 	@param{Noodles.Context}
@@ -50,7 +51,7 @@ exports.Plugin = new Noodles.Plugin({
 		Template.endTags = Template.endTags || {};
 		Template.endTags[Template.language.tag('loop')] = true;
 	},
-	/*--Coretags--
+	/*--looptag--
 	name:handleToken
 	description:executed when any tag in "willHandle" is found
 	@param{expression}

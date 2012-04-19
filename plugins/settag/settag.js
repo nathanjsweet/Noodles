@@ -15,7 +15,7 @@ description:Plugin Class implementation
 @type{Noodles.Plugin}
 */
 exports.Plugin = new Noodles.Plugin({
-	/*--Coretags--
+	/*--settag--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
 	@param{Noodles.Template}
@@ -24,30 +24,30 @@ exports.Plugin = new Noodles.Plugin({
 	willHandle : function(Template){
 		return [Template.language.tag('set')];
 	},
-	/*--Coretags--
+	/*--settag--
 	name:pluginName
 	@type{string}
 	*/
 	pluginName : 'settag',
-	/*--Coretags--
+	/*--settag--
 	name:browserFriendly
 	description:is this plugin browser friendly?
 	*/
 	browserFriendly: true,
-	/*--Coretags--
+	/*--settag--
 	name:onTemplateCreate
 	description:executed on template creation
 	@param{Noodles.Template}
 	*/
-	onTemplateCreate : function(Template){},
-	/*--Coretags--
+	onTemplateCreate : function(Context,Template){},
+	/*--settag--
 	name:onTemplateExecute
 	description:executed when template is run
 	@param{Noodles.Context}
 	@param{Noodles.Template}
 	*/
 	onTemplateExecute : function(Context, Template){},
-	/*--Coretags--
+	/*--settag--
 	name:handleToken
 	description:executed when any tag in "willHandle" is found
 	@param{Noodles.Template}
