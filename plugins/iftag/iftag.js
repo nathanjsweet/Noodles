@@ -295,7 +295,7 @@ Condition.prototype.execute = function(Template,Context){
 			case 'endswith':
 				return typeof left === "string" && typeof right === "string" ? new RegExp(right + '$').test(left) : false;
 			case 'matches':
-				return typeof left === "string" && right.constructor.name === "RegExp" ? right.test(left) : false;
+				return typeof left === "string" && right.constructor.name === "RegExp" ? right.test(left) : typeof right === "string" ? new RegExp(right).test(left) : false;
 			default:
 				return false;
 		}
