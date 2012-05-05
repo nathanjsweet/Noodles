@@ -22,7 +22,7 @@ exports.Plugin = new Noodles.Plugin({
 	@return {array}
 	*/
 	willHandle : function(Template){
-		return [Template.language.tag('set')];
+		return [Template.language.tag('set'),Template.language.tag('setalist'),Template.language.tag('setahash')];
 	},
 	/*--settag--
 	name:pluginName
@@ -58,6 +58,11 @@ exports.Plugin = new Noodles.Plugin({
 		switch(tag){
 			case Template.language.tag('set'):
 				return new Set(Template,expression);
+			case Template.language.tag('setalist'):
+				console.log('case met!');
+				return new SetList(Template,expression);
+			case Template.language.tag('setahash'):
+				return new SetHash(Template,expression);
 			default:
 				return {skip:true};
 		}
@@ -78,7 +83,7 @@ var Set = function(Template,expression){
 		return;
 	}
 	var temp = Noodles.Utilities.parseType(Template,expression[1]);
-	if(!(temp instanceof Noodles.Object)){
+	if(temp.type !== "object"){
 		this.skip = true;
 		Noodles.Utilities.warning(Template,'Set tag has bad syntax');
 		return;
@@ -109,5 +114,56 @@ Set.prototype.execute = function(Template,Context){
 	this.key.set(Template,Context,this.value);
 	return '';
 };
-
+/*--module--
+name: SetList
+description: List object set method
+@param {Noodles.Template}
+@param {expression}
+*/
+var SetList = function(Template,expression){
+	this.needs = {};
+	var reListSplit = /^setalist\s+([^=]+)\s*=\s*(.+)/,
+		obj,list,item;
+	if(!reListSplit.test(expression)){
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'Setalist tag has bad syntax');
+		return;
+	}
+	expression = reListSplit.exec(expression)
+	obj = Noodles.Utilities.parseType(Template,expression[1]);
+	
+	if(obj.type !== "object"){
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'Setalist tag has bad syntax');
+		return;
+	}
+	this.key = obj;
+	
+	if(this.key.order.length > 1){
+		this.needs = Noodles.Utilities.mergeObjectWith(this.needs,this.key.needs);
+	}
+	else{
+		this.sets = {};
+		this.sets[this.key.order[0]] = true;
+	}
+	this.modifies = {};
+	this.modifies[this.key.order[0]] = true;
+	list = expression[2].split(',');
+	for(var i = 0, l= list.length; i < l; i++){
+		list[i] = Noodles.Utilities.parseType(Template,list[i].trim());
+		this.needs = Noodles.Utilities.mergeObjectWith(this.needs,list[i].needs);
+	}
+	this.value = list;
+};
+/*--SetList--
+name: execute
+description: SetList execution
+@param {Noodles.Template}
+@param {Noodles.Context}
+@param {function=}
+*/
+SetList.prototype.execute = function(Template,Context){
+	this.key.set(Template,Context,this.value);
+	return '';
+};
 });
