@@ -162,14 +162,17 @@ description: listens for http requests
 Docs.listener = function(request,response){
 	var URL = url.parse(request.url),
 		host = request.headers.host,
-		pathName = URL.pathname === '/' ? 'home' : URL.pathname.slice(1),
-		fullPath = 'http://' + host + URL.path,
+		pathName = URL.pathname.slice(1),
+		fullPath = 'http://' + host + '/' + pathName,
 		respObj;
-	if(host !== 'docs' && host.toLowerCase() === 'docs' || host === 'docs' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase())){
+	if(host !== 'noodles' && host.toLowerCase() === 'noodles' || host === 'noodles' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase()) || pathName === ''){
+		if(pathName === ''){
+			fullPath += 'home';
+		}
 		response.writeHead(301,{'Location':fullPath.toLowerCase(), 'Expires': (new Date).toGMTString()});
 		response.end();
 	} 
-	else if(host === 'docs' && rePages.test(pathName)){
+	else if(rePages.test(pathName)){
 		respObj = Docs.getFromCache('page-' + pathName);
 		response.writeHead(200,{'Content-Type':'text/html','Content-Length':respObj.Length});
 		response.end(respObj.buffer);
