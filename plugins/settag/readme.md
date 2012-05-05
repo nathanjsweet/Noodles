@@ -23,3 +23,37 @@ The "Setalist" tag, which is simply a sub-tag of "Set" is used to specifically a
 	bar
 	1
 	bar
+Addtolist
+---------
+The "Addtolist" tag, which is simply a sub-tag of "Set" is used to specifically and only add a value to an existing list. If the tag accidentally tries to set a value to a non-list the tag will silently fail. The tag can add either an object, number, or string to an existing list:
+	
+	//Given that foo = "bar"
+	<{setalist mylist = "baz",foo,1,"bar"}>
+	<{addtolist "wham!" to mylist}>
+	<{loop mylist as item}>
+		<{item}>
+	<{end}>
+	//Will render:
+	baz
+	bar
+	1
+	bar
+	wham!
+Setahash
+--------
+The "Setahash" tag, which is simply a sub-tag of "Set" is used to specifically and only set a hash table of items equal to some variable or object, or to replace the value of an existing variable or object. This hash table can contain a mixed set of types. Hash tables can be looped over:
+	
+	//Given the foo = "bar"
+	<{setahash myhash = baz:"bar",foo:foo,one:1,zero:0,empty:""}>
+	<{myhash.baz}>
+	<{myhash.foo}>
+	<{if myhash.one}><{myhash.one}><{end}>
+	<{if !myhash.zero}><{myhash.zero}><{end}>
+	<{if myhash.empty}><{myhash.empty}><{end}>
+	//Will render:
+	"bar"
+	"bar"
+	1
+	0
+
+	
