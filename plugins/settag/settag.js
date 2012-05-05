@@ -85,7 +85,7 @@ var Set = function(Template,expression){
 	var temp = Noodles.Utilities.parseType(Template,expression[1]);
 	if(temp.type !== "object"){
 		this.skip = true;
-		Noodles.Utilities.warning(Template,'Set tag has bad syntax');
+		Noodles.Utilities.warning(Template,'Set tag has bad syntax, the variable must be an identifier or object');
 		return;
 	}
 	this.key = temp;
@@ -134,7 +134,7 @@ var SetList = function(Template,expression){
 	
 	if(obj.type !== "object"){
 		this.skip = true;
-		Noodles.Utilities.warning(Template,'Setalist tag has bad syntax');
+		Noodles.Utilities.warning(Template,'Setalist tag has bad syntax, the variable must be an identifier or object');
 		return;
 	}
 	this.key = obj;
@@ -163,6 +163,62 @@ description: SetList execution
 @param {function=}
 */
 SetList.prototype.execute = function(Template,Context){
+	this.key.set(Template,Context,this.value);
+	return '';
+};
+/*--module--
+name: SetHash
+description: Hash object set method
+@param {Noodles.Template}
+@param {expression}
+*/
+var SetHash = function(Template,expression){
+	this.needs = {};
+	var reHashSplit = /^setahash\s+([^=]+)\s*=\s*(.+)/,
+		hashObject =  {},
+		obj,hash,value;
+	if(!reHashSplit.test(expression)){
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'Setahash tag has bad syntax');
+		return;
+	}
+	expression = reHashSplit.exec(expression)
+	obj = Noodles.Utilities.parseType(Template,expression[1]);
+	
+	if(obj.type !== "object"){
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'Setahash tag has bad syntax, the variable must be an identifier or object');
+		return;
+	}
+	this.key = obj;
+	
+	if(this.key.order.length > 1){
+		this.needs = Noodles.Utilities.mergeObjectWith(this.needs,this.key.needs);
+	}
+	else{
+		this.sets = {};
+		this.sets[this.key.order[0]] = true;
+	}
+	this.modifies = {};
+	this.modifies[this.key.order[0]] = true;
+	
+	hash = expression[2].split(',');
+	for(var i = 0, l= hash.length; i < l; i++){
+		hash[i] = hash[i].split(':');
+		value = hash[i][0].trim().toLowerCase();
+		hashObject[value] = Noodles.Utilities.parseType(Template,hash[i][1].trim())
+		this.needs = Noodles.Utilities.mergeObjectWith(this.needs,hashObject[value].needs);
+	}
+	this.value = hashObject;
+};
+/*--SetHash--
+name: execute
+description: SetHash execution
+@param {Noodles.Template}
+@param {Noodles.Context}
+@param {function=}
+*/
+SetHash.prototype.execute = function(Template,Context){
 	this.key.set(Template,Context,this.value);
 	return '';
 };
