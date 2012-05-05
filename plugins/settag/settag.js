@@ -22,7 +22,7 @@ exports.Plugin = new Noodles.Plugin({
 	@return {array}
 	*/
 	willHandle : function(Template){
-		return [Template.language.tag('set'),Template.language.tag('setalist'),Template.language.tag('setahash')];
+		return [Template.language.tag('set'),Template.language.tag('setalist'),Template.language.tag('setahash'),Template.language.tag('addtolist')];
 	},
 	/*--settag--
 	name:pluginName
@@ -59,10 +59,11 @@ exports.Plugin = new Noodles.Plugin({
 			case Template.language.tag('set'):
 				return new Set(Template,expression);
 			case Template.language.tag('setalist'):
-				console.log('case met!');
 				return new SetList(Template,expression);
 			case Template.language.tag('setahash'):
 				return new SetHash(Template,expression);
+			case Template.language.tag('addtolist'):
+				return new AddToList(Template,expression);
 			default:
 				return {skip:true};
 		}
@@ -220,6 +221,46 @@ description: SetHash execution
 */
 SetHash.prototype.execute = function(Template,Context){
 	this.key.set(Template,Context,this.value);
+	return '';
+};
+/*--module--
+name: AddToList
+description: AddToList object set method
+@param {Noodles.Template}
+@param {expression}
+*/
+var AddToList = function(Template,expression){
+	this.needs = {};
+	var reAddToList = /^addtolist\s+([^=]+)\s+to\s+(.+)/;
+	
+	if(!reAddToList.test(expression)){
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'Addtolist tag has bad syntax');
+		return;
+	}
+	expression = reAddToList.exec(expression)
+	this.value = Noodles.Utilities.parseType(Template,expression[1]);
+	this.list = Noodles.Utilities.parseType(Template,expression[2]);
+	if(this.list.type !== "object"){
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'Addtolist tag has bad syntax, the list must be an identifier or object');
+		return;
+	}
+	this.needs = Noodles.Utilities.mergeObjectWith(this.needs,this.value.needs);
+	this.needs = Noodles.Utilities.mergeObjectWith(this.needs, this.list.needs);
+	this.modifies = {};
+	this.modifies[this.list.order[0]] = true;
+};
+/*--AddToList--
+name: execute
+description: AddToList execution
+@param {Noodles.Template}
+@param {Noodles.Context}
+@param {function=}
+*/
+AddToList.prototype.execute = function(Template,Context){
+	var list = this.list.execute(Template,Context,true);
+	list.push(this.value.execute(Template,Context));
 	return '';
 };
 });
