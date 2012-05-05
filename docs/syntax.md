@@ -9,6 +9,13 @@ Noodles Syntax is really quite simple to think about. It is designed to be as un
 	<{"foo"}> //would render as "foo"
 	something <{foo}> baz //would render as "something bar baz"
 
+There are additional ways to access values in Noodles. A variable, string, number, or another object can be used to access the property of another object:
+	
+	//Given that foo is an object with the properties one, two, three, respectively equal to 1, 2, and 3
+	//And given that bar is a variable that equals the string, "three"
+	<{foo.one}> //woud render as 1
+	<{foo["two"]}> // would render as 2
+	<{foo[bar]}> // would render as 3
 All that a Noodle's template really does is control the flow of text rendering. So some Noodles tags render their block scope rather than "doing anything" themselves, as accessing an object in the above example does. A Normal HTML document, for example, could be easily utilize Noodles for its flow-control rendering:
 	
 	//Where title is the key of some value.
