@@ -163,9 +163,10 @@ Docs.listener = function(request,response){
 	var URL = url.parse(request.url),
 		host = request.headers.host,
 		pathName = URL.pathname.slice(1),
+		domain = 'noodles',
 		fullPath = 'http://' + host + '/' + pathName,
 		respObj;
-	if(host !== 'noodles' && host.toLowerCase() === 'noodles' || host === 'noodles' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase()) || pathName === ''){
+	if(host !== domain && host.toLowerCase() === domain || host === 'noodles' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase()) || pathName === ''){
 		if(pathName === ''){
 			fullPath += 'home';
 		}
