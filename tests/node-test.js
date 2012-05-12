@@ -1,18 +1,15 @@
 var Noodles = require('./../lib/index.js');
-var rawString = ['This is a very basic template. By <{author}>.',
-'<{set middlename = "Johnathan"}>',
-'<{if firstname == "Nathan" or lastname and middlename}>',
-	'<{if firstname}>His firstname is <{firstname}><{else}>We don\'t know his firstname<{end}>.',
-	'<{if middlename}>, his middlename is <{middlename}><{end}>',
-	' his last name is <{lastname}>',
+var rawString = [
+'<{set one = 1}>',
+'<{setahash myhash = nathan:"sweet",kate:"sweet",andrew:"soerens",one:one}>',
+'<{loop myhash}>',
+'<{value}>',
+'<{name}>',
 '<{end}>',
-'<{if authors}>',
-'<{loop authors}>',
-	'index: <{__index}>',
-	'name:<{name}>',
-	'value:<{value}>',
-'<{end}>',
-'<{end}>'].join('\n');
+'<{myhash["nathan"]}>',
+'<{myhash.kate}>',
+'<{one}>'
+].join('\n');
 
 var metaData = 'author = <{firstName}> <{lastName}>';
 var time = Date.now(),
