@@ -50,3 +50,5 @@ The "meta-data" in this example would execute it's calculation every time it is 
 	\htmltitle = <{if !title}><{title}><{else}><{title}><{end}>
 	#the above variable will only run once per execution of the template it belongs to, if it is even accessed more than once.
 	pageParameter = <{loop request as param}><{if param.key = "page"}><{param.value}><{exitloop}><{end}><{end}>
+
+Remember, while there are more than three types of data in Noodles (some objects may contain things like arrays or regular expressions), there are only three different ways of manipulating data in Noodles. Numbers, Strings, and Objects, if you keep this in mind it will always make whatever task you're trying to accomplish easier to think about an accomplish.
