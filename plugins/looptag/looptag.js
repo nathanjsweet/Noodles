@@ -3,12 +3,11 @@
 if(typeof process !== "undefined"){
 	var requirejs = require('requirejs');
 	var define = requirejs.define;
-	var _Noodles = require('./../lib');
 }
 
 define(function(require, exports, module){
 //get Noodles, the blank concat is to preven requirejs from getting too smart on us.
-var Noodles = typeof _Noodles === "undefined" ? require(''+'./../../lib/browser-index') : _Noodles;
+var Noodles = require('./../../lib/index.js');
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
@@ -125,7 +124,7 @@ Loop.prototype.execute = function(Template,Context,Callback){
 		collection = [],
 		key;
 	if(keys === "") return "";
-	while(i < l){
+	while(i < l && !Context.exitLoop){
 		key = keys[i];
 		this.name.set(Template,Context,key);
 		this.value.set(Template,Context,_object[key]);
@@ -134,6 +133,7 @@ Loop.prototype.execute = function(Template,Context,Callback){
 		collection.push(this.template.execute(Template,Context));
 		i++;
 	}
+	Context.exitLoop = false;
 	this.name.delete(Template,Context);
 	this.value.delete(Template,Context);
 	this.index.delete(Template,Context);
