@@ -5,12 +5,12 @@ var rawString = [
 '<{loop myhash}>',
 '<{value}>',
 '<{name}>',
+'<{if __index == 2}><{exitloop}><{end}>',
 '<{end}>',
 '<{myhash["nathan"]}>',
 '<{myhash.kate}>',
 '<{one}>'
 ].join('\n');
-
 var metaData = 'author = <{firstName}> <{lastName}>';
 var time = Date.now(),
 	object = {'lastname':'Sweet','firstname':'Nathan','authors':["location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp"]};
