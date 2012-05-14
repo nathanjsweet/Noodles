@@ -73,6 +73,8 @@ description: Loop object
 @param {expression}
 */
 var Loop = function(Template,expression){
+	var name,set,index;
+	
 	this.rawString = Noodles.Utilities.grabToEndSliceRaw(Template, expression,Template.language.tag('Loop'));
 	this.needs = {};
 	
@@ -93,10 +95,20 @@ var Loop = function(Template,expression){
 
 	this.template = Noodles.Utilities.createSubTemplate(Template,this.rawString, this);
 	Template._leftCount++;//the end tag we sliced above
-	this.name = new Noodles.Object(this.template,Template.language.other('name'));
-	this.value = new Noodles.Object(this.template,Template.language.other('value'));
-	this.index = new Noodles.Object(this.template,'__' + Template.language.other('index'));
+	this.sets = {};
+	this.modifies = {};
+	name = Template.language.other('name')
+	this.name = new Noodles.Object(this.template,name);
+	this.sets[name];
+	this.modifies[name];
+	value = Template.language.other('value');
+	this.value = new Noodles.Object(this.template,value);
+	index = '__' + Template.language.other('index')
+	this.index = new Noodles.Object(this.template,index);
+	this.sets[index];
+	this.modifies[index];
 	this.setExists = false;
+	
 	if(expression.length >= 4){
 		this.setObject = new Noodles.Object(this.template,expression[3]);
 		if(this.setObject.key.order.length > 1){
@@ -134,6 +146,7 @@ Loop.prototype.execute = function(Template,Context,Callback){
 		i++;
 	}
 	Context.exitLoop = false;
+	Context.exitNow = false;
 	this.name.delete(Template,Context);
 	this.value.delete(Template,Context);
 	this.index.delete(Template,Context);

@@ -27,3 +27,17 @@ Note that a value that is an object simply renders as a blank space. A loop can 
 		
 		1
 Loops may contain other tags in them, such as if tags, or set tags.
+
+ExitLoop
+--------
+Exitloop is a sub-tab of loop, which can only be used in a loop, it allows you to exit a loop whenever you wish. Usually it should be wrapped in some sort of a condition, but it can be used on its own, it simply means the loop will only iterate once up until the "exitloop" statement.
+	
+	//Where foo = {"bar:"baz","baz":1,foo:"bar"}
+	<{loop foo as bar}>
+		<{bar}>
+		<{if __index == 1}><{exitloop}><{end}>
+	<{end}>
+	//Will render as:
+	baz
+	
+	1
