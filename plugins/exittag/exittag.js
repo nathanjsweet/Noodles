@@ -85,11 +85,9 @@ description: Set execution
 @param {function=}
 */
 Exit.prototype.execute = function(Template,Context,Callback){
+	Context.exitNow = true;
 	if(this.loop){
 		Context.exitLoop = true;
 	}
-	else{
-		Context.exitNow = true;
-	} 
 };
 });
