@@ -129,7 +129,7 @@ Docs.getDocuments = function(fx){
 			plugins.sort();
 			coretags =  ',' + coretags.join() + ',';
 			for(l = plugins.length, i = 0; i < l; i++){
-				if(coretags.indexOf(',' + plugins[i] + ',') !== -1) continue;
+				if(coretags.indexOf(',' + plugins[i] + ',') !== -1 || /^\./.test(plugins[i])) continue;
 				article = article + markdown.toHTML( fs.readFileSync(__dirname + '/./../plugins/' + plugins[i] + '/readme.md').toString() );
 			}
 			template.execute({
