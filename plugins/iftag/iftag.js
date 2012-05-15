@@ -7,7 +7,7 @@ if(typeof process !== "undefined"){
 
 define(function(require, exports, module){
 //get Noodles, the blank concat is to preven requirejs from getting too smart on us.
-var Noodles = require('./../../lib/index.js');
+var Noodles = require('./../../lib/noodles.js');
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
