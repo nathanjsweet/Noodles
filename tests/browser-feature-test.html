@@ -10,18 +10,19 @@
 <body>
 <script src="./../node_modules/requirejs/require.js"></script>
 <script>
-	require(['./../lib/index'],function(Noodles){
+	require(['./../lib/noodles'],function(Noodles){
 		var rawString = [
 		'<{set one = 1}>',
+		'<{set l = "length"}>',
 		'<{setalist mylist = "nathan","kate","andrew",one}>',
 		'<{addtolist "foo" to mylist}>',
-		'<{exit}>',
 		'<{loop mylist}>',
-		'<{value}>',
 		'<{if __index == 2}><{exitloop}><{end}>',
+		'<{value}>',
+		'yeah<{__index}>',
 		'<{end}>',
 		'<{mylist[0]}>',
-		'<{mylist.length}>'
+		'<{mylist[l]}>'
 		].join('\n');
 
 		var metaData = 'author = <{firstName}> <{lastName}>';

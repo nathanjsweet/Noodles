@@ -1,4 +1,4 @@
-var Noodles = require('./../lib/index.js');
+var Noodles = require('./../../noodles');
 var rawString = [
 '<{set one = 1}>',
 '<{setahash myhash = nathan:"sweet",kate:"sweet",andrew:"soerens",one:one}>',
