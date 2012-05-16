@@ -25,7 +25,7 @@ exports.Plugin = new Noodles.Plugin({
 			Template.language.tag('setalist'),
 			Template.language.tag('setahash'),
 			Template.language.tag('addtolist'),
-			Template.language.tag('setregex')];
+			Template.language.tag('setaregex')];
 	},
 	/*--settag--
 	name:pluginName
@@ -67,8 +67,8 @@ exports.Plugin = new Noodles.Plugin({
 				return new SetHash(Template,expression);
 			case Template.language.tag('addtolist'):
 				return new AddToList(Template,expression);
-			case Template.language.tag('setregex'):
-				return new SetRegEx(Template,expression);
+			case Template.language.tag('setaregex'):
+				return new SetARegEx(Template,expression);
 			default:
 				return {skip:true};
 		}
@@ -269,18 +269,18 @@ AddToList.prototype.execute = function(Template,Context){
 	return '';
 };
 /*--module--
-name: SetRegEx
+name: SetARegEx
 description: SetRegexp method
 @param {Noodles.Template}
 @param {expression}
 */
-//<{setregex myregexp = "^\s+|\s+$"}>
-var SetRegEx = function(Template,expression){
+//<{setaregex myregexp = "^\s+|\s+$"}>
+var SetARegEx = function(Template,expression){
 	this.needs = {};
 	expression = expression.split(/\s+/);
 	this.name = Noodles.Utilities.parseType(Template,expression[0]);
 	if(this.name.type !== "object"){
-		Noodles.Utilities.warning(Template,'SetRegEx tag has bad syntax, the name must be an identifier');
+		Noodles.Utilities.warning(Template,'SetARegEx tag has bad syntax, the name must be an identifier');
 		this.skip = true;
 		return;
 	}
@@ -297,18 +297,18 @@ var SetRegEx = function(Template,expression){
 	}
 	else{
 		this.skip = true;
-		Noodles.Utilities.warning(Template,'SetRegEx tag has bad syntax, the value must receive a string or object');
+		Noodles.Utilities.warning(Template,'SetARegEx tag has bad syntax, the value must receive a string or object');
 		return;
 	}
 };
-/*--SetRegEx--
-name: SetRegEx
+/*--SetARegEx--
+name: SetARegEx
 description: SetRegEx execution
 @param {Noodles.Template}
 @param {Noodles.Context}
 @param {function=}
 */
-SetRegEx.prototype.execute = function(Template,Context){
+SetARegEx.prototype.execute = function(Template,Context){
 	var regex = this.regex === false ? this.options ? new RegExp(this.value.execute(Template,Context),this.options) : new RegExp(this.value.execute(Template,Context)) : this.regex;
 	this.name.set(Template,Context,regex);
 	return '';

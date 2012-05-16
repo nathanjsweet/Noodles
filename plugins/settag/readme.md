@@ -23,6 +23,7 @@ The "Setalist" tag, which is simply a sub-tag of "Set" is used to specifically a
 	bar
 	1
 	bar
+	
 Addtolist
 ---------
 The "Addtolist" tag, which is simply a sub-tag of "Set" is used to specifically and only add a value to an existing list. If the tag accidentally tries to set a value to a non-list the tag will silently fail. The tag can add either an object, number, or string to an existing list:
@@ -39,6 +40,7 @@ The "Addtolist" tag, which is simply a sub-tag of "Set" is used to specifically 
 	1
 	bar
 	wham!
+	
 Setahash
 --------
 The "Setahash" tag, which is simply a sub-tag of "Set" is used to specifically and only set a hash table of items equal to some variable or object, or to replace the value of an existing variable or object. This hash table can contain a mixed set of types. Hash tables can be looped over:
@@ -55,5 +57,18 @@ The "Setahash" tag, which is simply a sub-tag of "Set" is used to specifically a
 	"bar"
 	1
 	0
+
+Setaregex
+---------
+The "Setaregex" tag, which is simply a sub-tag of "Set" is used to specifically and only set a Regular Expression to some variable or object, or to replace the value of an existing variable or object. This tag will probably not be used to often, but there are tags throughout Noodles that can take a Regular Expression as parameter, allowing a more robust set of functionality. The tag can take either a string or object to be processed as a regular expression:
+	
+	//Given that foo = "bar" and bar = "foo" and baz = "foobar"
+	<{setaregex reBarBaz = "^(bar|baz)$"}>
+	<{if foo matches reBarBaz}>foo matches<{end}>
+	<{if bar matches reBarBaz}>bar matches<{end}>
+	<{if baz matches reBarBaz}>baz matches<{end}>
+	//Will render:
+	foo matches
+	bar matches
 
 	
