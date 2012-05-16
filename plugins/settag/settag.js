@@ -21,7 +21,11 @@ exports.Plugin = new Noodles.Plugin({
 	@return {array}
 	*/
 	willHandle : function(Template){
-		return [Template.language.tag('set'),Template.language.tag('setalist'),Template.language.tag('setahash'),Template.language.tag('addtolist')];
+		return [Template.language.tag('set'),
+			Template.language.tag('setalist'),
+			Template.language.tag('setahash'),
+			Template.language.tag('addtolist'),
+			Template.language.tag('setregex')];
 	},
 	/*--settag--
 	name:pluginName
@@ -63,6 +67,8 @@ exports.Plugin = new Noodles.Plugin({
 				return new SetHash(Template,expression);
 			case Template.language.tag('addtolist'):
 				return new AddToList(Template,expression);
+			case Template.language.tag('setregex'):
+				return new SetRegEx(Template,expression);
 			default:
 				return {skip:true};
 		}
@@ -260,6 +266,51 @@ description: AddToList execution
 AddToList.prototype.execute = function(Template,Context){
 	var list = this.list.execute(Template,Context,true);
 	list.push(this.value.execute(Template,Context));
+	return '';
+};
+/*--module--
+name: SetRegEx
+description: SetRegexp method
+@param {Noodles.Template}
+@param {expression}
+*/
+//<{setregex myregexp = "^\s+|\s+$"}>
+var SetRegEx = function(Template,expression){
+	this.needs = {};
+	expression = expression.split(/\s+/);
+	this.name = Noodles.Utilities.parseType(Template,expression[0]);
+	if(this.name.type !== "object"){
+		Noodles.Utilities.warning(Template,'SetRegEx tag has bad syntax, the name must be an identifier');
+		this.skip = true;
+		return;
+	}
+	this.value = Noodles.Utilities.parseType(Template,expression[2]);
+	this.options = typeof expression[3] === "string" && expression[3].length > 0 ? expression[3].toLowerCase() : false;
+	if(this.value.type === "string"){
+		this.regex = this.options ? new RegExp(this.value.execute(),this.options) : new RegExp(this.value.execute());
+	}
+	else if(this.value.type === "object"){
+		this.regex = false;
+		this.needs = Noodles.Utilities.mergeObjectWith(this.needs,this.value.needs);
+		this.modifies = {};
+		this.modifies[this.value.order[0]] = true;
+	}
+	else{
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'SetRegEx tag has bad syntax, the value must receive a string or object');
+		return;
+	}
+};
+/*--SetRegEx--
+name: SetRegEx
+description: SetRegEx execution
+@param {Noodles.Template}
+@param {Noodles.Context}
+@param {function=}
+*/
+SetRegEx.prototype.execute = function(Template,Context){
+	var regex = this.regex === false ? this.options ? new RegExp(this.value.execute(Template,Context),this.options) : new RegExp(this.value.execute(Template,Context)) : this.regex;
+	this.name.set(Template,Context,regex);
 	return '';
 };
 });
