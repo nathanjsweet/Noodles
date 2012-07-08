@@ -1,10 +1,5 @@
-//Require JS for node
-//otherwise just make sure that the browser version loads before this file.
-if(typeof process !== "undefined"){
-	var requirejs = require('requirejs');
-	var define = requirejs.define;
-}
-
+if(typeof process !== "undefined")
+	var define = require.define;
 define(function(require, exports, module){
 //get Noodles, the blank concat is to preven requirejs from getting too smart on us.
 var Noodles = require('./../../lib/noodles.js');
