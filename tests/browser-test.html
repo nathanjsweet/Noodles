@@ -39,7 +39,7 @@ require(['./../lib/noodles'],function(Noodles){
 				myTemp = template;
 				console.log(myTemp);
 				console.log('compile time: ',time,'ms');
-				testTemp(myTemp,10000);
+				testTemp(myTemp,100);
 			}
 		});
 
@@ -64,7 +64,7 @@ require(['./../lib/noodles'],function(Noodles){
 					});
 				}
 			}
-			setTimeout(logTime,1000,arr);
+			setTimeout(logTime,100,arr);
 		};
 
 		function logTime(arr){
