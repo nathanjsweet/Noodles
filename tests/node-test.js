@@ -53,20 +53,29 @@ function testTemp(temp,length){
 function logTime(arr){
 	var totalTime = 0,
 		upperBound = 0,
-		lowerBound = Number.POSITIVE_INFINITY;
+		lowerBound = Number.POSITIVE_INFINITY,
+		standardSum = 0,
+		mean,sigma;
 	for(var i = 0, l = arr.length; i < l; i++){
 		if(typeof arr[i] !== "number"){
 			setTimeout(logTime,1000,arr);
 			return;
 		}
+		standardSum += Math.pow(arr[i],2);
 		if(arr[i] > upperBound) upperBound = arr[i];
 		if(arr[i] < lowerBound) lowerBound = arr[i];
 		totalTime += arr[i];
 	}
+	mean = totalTime/l;
+	for(i = 0; i < l; i++){
+		standardSum += Math.pow((arr[i] - mean),2);
+	}
+	sigma = Math.sqrt(standardSum/(l-1));
 	console.log('The average time was: ', totalTime/l,'ms.\n',
 	'The upper bound time was: ', upperBound, 'ms.\n',
-	'The lower bound time was: ', lowerBound,'ms.'
-	);
+	'The lower bound time was: ', lowerBound,'ms.\n',
+	'The standard deviation was:',sigma,'ms.\n',
+	'The number of runs was: ',l,'.');
 	
 		
 }
