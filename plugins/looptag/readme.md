@@ -1,6 +1,6 @@
 Loop
 ----
-The loop tag for Noodles is the second most important control-flow tag. It does one thing, it loops over a specified object and renders a block of text for every key-value pair it encounters in the object it. There are three special keywords that are created and changed by each execution of the loop, "__index", "name", and "value". When the last execution of the loop takes place these variables will be set globally to the last value that they were:
+The loop tag for Noodles is the second most important control-flow tag. It does one thing, it loops over a specified object and renders a block of text for every key-value pair it encounters in the object it. There are three special keywords that are created and changed by each execution of the loop, "__index", "name", and "value". These variables will only exist within the loop execution/scope/block, they will NOT exist as their lastly executed values:
 	
 	//Where foo = {"bar:"baz","baz":[1,2,3,4]}
 	<{loop foo}>
@@ -8,6 +8,7 @@ The loop tag for Noodles is the second most important control-flow tag. It does 
 		"name":<{name}>
 		"value":<{value}>
 	<{end}>
+	index:<{__index}>
 	//Will render as:
 		index:0
 		"name":bar
@@ -15,7 +16,8 @@ The loop tag for Noodles is the second most important control-flow tag. It does 
 		
 		index:1
 		name:baz
-		value: 
+		value:
+	index:	 
 Note that a value that is an object simply renders as a blank space. A loop can be written in one other was and that is to set the value of each iteration to be referenced by some name:
 	
 	//Where foo = {"bar:"baz","baz":1}
