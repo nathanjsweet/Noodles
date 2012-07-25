@@ -123,7 +123,7 @@ description: List object set method
 */
 var SetList = function(Template,expression){
 	this.needs = {};
-	var reListSplit = /^setalist\s+([^=]+)\s*=\s*(.+)/,
+	var reListSplit = new RegExp('^' + Template.language.tag('setalist') + '\\s+([^=]+)\\s*=\\s*(.+)'),
 		obj,list,item;
 	if(!reListSplit.test(expression)){
 		this.skip = true;
@@ -175,7 +175,7 @@ description: Hash object set method
 */
 var SetHash = function(Template,expression){
 	this.needs = {};
-	var reHashSplit = /^setahash\s+([^=]+)\s*=\s*(.+)/,
+	var reHashSplit = new RegExp('^' + Template.language.tag('setahash') + '\\s+([^=]+)\\s*=\\s*(.+)'),
 		hashObject =  {},
 		obj,hash,value;
 	if(!reHashSplit.test(expression)){
@@ -231,8 +231,7 @@ description: AddToList object set method
 */
 var AddToList = function(Template,expression){
 	this.needs = {};
-	var reAddToList = /^addtolist\s+([^=]+)\s+to\s+(.+)/;
-	
+	var reAddToList = new RegExp('^' + Template.language.tag('addtolist') + '\\s+([^=]+)\\s+to\\s+(.+)');
 	if(!reAddToList.test(expression)){
 		this.skip = true;
 		Noodles.Utilities.warning(Template,'Addtolist tag has bad syntax');
@@ -269,7 +268,6 @@ description: SetRegexp method
 @param {Noodles.Template}
 @param {expression}
 */
-//<{setaregex myregexp = "^\s+|\s+$"}>
 var SetARegEx = function(Template,expression){
 	this.needs = {};
 	expression = expression.split(/\s+/);
