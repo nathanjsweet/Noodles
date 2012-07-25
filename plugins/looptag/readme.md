@@ -41,3 +41,17 @@ Exitloop is a sub-tab of loop, which can only be used in a loop, it allows you t
 	baz
 	
 	1
+
+Continue
+--------
+Continue is a sub-tag of loop, which can only be used in a loop, it allows you to continue out of the current iteration of the loop, but not to break out of the loop. It will most likely be wrapped in some condition, but it does not have to be.
+	
+	//Where foo = {"bar:"baz","baz":1,foo:"bar"}
+	<{loop foo as bar}>
+		<{bar}>
+		<{if __index == 1}><{continue}><{end}>
+	<{end}>
+	//Will render as:
+	baz
+	
+	bar
