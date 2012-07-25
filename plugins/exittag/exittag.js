@@ -16,7 +16,7 @@ exports.Plugin = new Noodles.Plugin({
 	@return {array}
 	*/
 	willHandle : function(Template){
-		return [Template.language.tag('exit'),Template.language.tag('exitloop')];
+		return [Template.language.tag('exit'),Template.language.tag('exitloop'),Template.language.tag('continue')];
 	},
 	/*--exittag--
 	name:pluginName
@@ -50,6 +50,8 @@ exports.Plugin = new Noodles.Plugin({
 	*/
 	handleToken : function(Template, expression, tag){
 		switch(tag){
+			case Template.language.tag('exit'):
+				return new Exit(Template,expression);
 			case Template.language.tag('exit'):
 				return new Exit(Template,expression);
 			case Template.language.tag('exitloop'):
