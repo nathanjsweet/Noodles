@@ -48,8 +48,8 @@ Continue is a sub-tag of loop, which can only be used in a loop, it allows you t
 	
 	//Where foo = {"bar:"baz","baz":1,foo:"bar"}
 	<{loop foo as bar}>
-		<{bar}>
 		<{if __index == 1}><{continue}><{end}>
+		<{bar}>
 	<{end}>
 	//Will render as:
 	baz
