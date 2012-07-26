@@ -52,8 +52,8 @@ exports.Plugin = new Noodles.Plugin({
 		switch(tag){
 			case Template.language.tag('exit'):
 				return new Exit(Template,expression);
-			case Template.language.tag('exit'):
-				return new Exit(Template,expression);
+			case Template.language.tag('continue'):
+				return new Continue(Template,expression);
 			case Template.language.tag('exitloop'):
 				return new Exit(Template,expression,true);
 			default:
@@ -63,7 +63,7 @@ exports.Plugin = new Noodles.Plugin({
 });
 /*--module--
 name: Exit
-description: Exit execution
+description: Exit object
 @param {Noodles.Template}
 @param {string}
 @param {boolean}
@@ -76,7 +76,7 @@ var Exit = function(Template,expression,loop){
 };
 /*--Exit--
 name: execute
-description: Set execution
+description: Exit execution
 @param {Noodles.Template}
 @param {Noodles.Context}
 @param {function=}
@@ -86,5 +86,28 @@ Exit.prototype.execute = function(Template,Context,Callback){
 	if(this.loop){
 		Context.exitLoop = true;
 	}
+};
+/*--module--
+name: Continue object
+description: Continue object
+@param {Noodles.Template}
+@param {string}
+*/
+var Continue = function(Template,expression){
+	this.loop = !!loop;
+	this.needs = {};
+	this.isAmbiguous = true;
+	this.modifies = {};
+};
+/*--Continue--
+name: execute
+description: Continue execution
+@param {Noodles.Template}
+@param {Noodles.Context}
+@param {function=}
+*/
+Continue.prototype.execute = function(Template,Context,Callback){
+	Context.exitNow = true;
+	Context.continue = true;
 };
 });
