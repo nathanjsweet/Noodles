@@ -138,10 +138,16 @@ Loop.prototype.execute = function(Template,Context,Callback){
 		this.index.set(Template,Context,i);
 		if(this.setExists) this.setObject.set(Template,Context,_object[key]);
 		collection.push(this.template.execute(Template,Context));
+		if(Context.continue){
+			Context.exitNow = false;
+			Context.continue = false;
+		}
 		i++;
 	}
-	Context.exitLoop = false;
-	Context.exitNow = false;
+	if(Context.exitLoop){
+		Context.exitLoop = false;
+		Context.exitNow = false;
+	}
 	this.name.delete(Template,Context);
 	this.value.delete(Template,Context);
 	this.index.delete(Template,Context);
