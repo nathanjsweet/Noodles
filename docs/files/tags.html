@@ -1,0 +1,252 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<link href='http://fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
+	<title>Tags - Noodles Documentation</title>
+	<style>
+	html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+	header{background:#e2e2e2;margin:24px auto 0;width:720px;font-family: 'Brawler', serif; padding:8px;}
+	header h1 {font-size:24px;margin:0 0 8px 6px;}
+	header nav li {float:left;padding:0 6px;}
+	header nav li:not(:last-child){border-right:2px solid #000;}
+	article{background:#e2e2e2;margin:0 auto;width:712px;font-family: 'Brawler', serif; padding:30px 12px;display:block; line-height:1.4;}
+	article h1:first-child{display:none;}
+	article h2{font-size:20px;}
+	article p{margin:12px 0;}
+	article pre{margin: 1em 0;
+		font-size: 12px;
+		background-color: white;
+		border: 1px solid #DDD;
+		padding: 5px;
+		line-height: 1.5em;
+		color: #444;
+		overflow: auto;
+		-webkit-box-shadow: rgba(0,0,0,0.07) 0 1px 2px inset;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Tags - Noodles Documentation</h1>
+		<nav>
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/syntax">Syntax</a></li>
+				<li>Tags</li>
+				<li><a href="/plugins">Plugins</a></li>
+				<li><a href="warnings-errors">Warnings/Errors</a></li>
+			</ul>
+		</nav>
+	</header>
+	<article>
+		<h1>Tags</h1>
+
+<h2>Introduction</h2>
+
+<p>Along with accessing objects, Noodles tags can be used to utilize methods or &quot;macros&quot;. Certain keywords, thus, cannot be utilized as object names. In addition to this list there may be extra &quot;plugins&quot; that provide additional macro-functionality. Most of the tags are self-contained, but a few like &quot;if&quot; and &quot;loop&quot; are control-flow tags that render blocks of text.</p><h2>If</h2>
+
+<p>The if tag is the primary flow-control tag in Noodles. It can do a lot. It is primarily useful in evaluating a set of conditions and rendering text on those sets of conditions. Within the if tag the keywords &quot;and&quot; and &quot;or&quot; can be used to delimit sets of conditions within one if statement. Similar to most programming languages conditions are separated by &quot;or&quot;s first and groups of &quot;and&quot;s are evaluated together first. Notice that objects can be compared to other objects or strings.</p>
+
+<pre><code>&lt;{if foo == bar and foo contains &quot;bar&quot; or bar contains foo}&gt;
+	some text to render
+&lt;{elseif foo == &quot;bar&quot;}&gt;
+	some other text to render
+	&lt;{if bar startswith &quot;foo&quot;}&gt;render this&lt;{end}&gt;
+&lt;{else}&gt;
+	text to render it no condition is met
+&lt;{end}&gt;</code></pre>
+
+<p>As you may notice the if statement also supports subsequent &quot;elseif&quot; and &quot;else&quot; statements to keep control-flow as compact as possible. As you may have also noticed the if statement supports different sets of boolean evaluations. Here is a comprehensive list of them via examples:</p>
+
+<pre><code>&lt;{if foo}&gt;
+	//if foo, as an object, exists
+&lt;{if !foo}&gt;
+	//if foo, as an object, does not exist
+&lt;{if foo == &quot;bar&quot;}&gt;
+	//if string equality is true, this comparison is case-insensitive
+&lt;{if foo !== &quot;bar&quot;}&gt;
+	//if string equality is untrue, this comparison is case-insensitive,
+	//so &quot;bar&quot; != &quot;BAR&quot; will evaluate as false
+&lt;{if foo contains &quot;bar&quot;}&gt;
+	//if a string contains a given substring, this is case-insensitive
+&lt;{if foo startswith &quot;bar&quot;}&gt;
+	//if a string starts with a given substring, this is case-insensitive
+&lt;{if foo endswith &quot;bar&quot;}&gt;
+	//if a string ends with a given substring, this is case-insensitive
+&lt;{if count &gt; -1}&gt;
+	//if a number is greater than some other number
+&lt;{if count &lt; 1}&gt;
+	//if a number is less than some other number
+&lt;{if count &gt;= 1.5}&gt;
+	//if a number is greater than or equal to some other number
+&lt;{if count &lt;= -1.5}&gt;
+	//if a number is less than or equal to some other number
+&lt;{if something matches reBaz}&gt; OR &lt;{if something matches &quot;^\s+|\s+$&quot;}&gt;
+	//This last one is somewhat complex and will only work if executed appropriately.
+	//The left side of the comparison must be a string or an object that refers to a string.
+	//The right side of the comparison must be either a RegularExpression object of a string (or an object pointing to),
+	//if a string is provided on the right side it will be evaluated to a Regular Expression.
+	//The expression itself tests whether the left side of the expression matches the,
+	//Regular Expression on the right side. The JavaScript Regular Expression is what is used,
+	//to create the regular expression. HOWEVER, like all of the string comparisons, this will
+	//always be case insensitive</code></pre>
+
+<p>Notice that all string comparisons are case-insensitive, notice also that you can use objects to refer to strings so &#39;foo == &quot;bar&quot;&#39; will
+evaluate the exact same as &#39;foo == baz&#39; if baz refers to &quot;bar&quot;. Also note that all of these comparisons can be strung together with other comparisons using &quot;or&quot; and &quot;and&quot;.</p><h2>Set</h2>
+
+<p>The Set tag is used to set a variable name to some value, it can be used to create a new variable or object, or to replace the value of an existing variable or object. In the simplest form a value is set to be equal to either a string, a number, or another object:</p>
+
+<pre><code>//Given that foo = &quot;bar&quot;
+&lt;{set bar = &quot;foo&quot;}&gt;
+&lt;{set baz = foo}&gt;
+&lt;{set one = 1}&gt;
+//Now bar = &quot;foo&quot;, baz = &quot;bar&quot;, and one is equal to the integer 1
+//Baz equals bar because it is equal to the value of foo; if foo is changed it will not change it&#39;s value</code></pre>
+
+<h2>Setalist</h2>
+
+<p>The &quot;Setalist&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only set a list of items equal to some variable or object, or to replace the value of an existing variable or object. This list can contain a mixed set of types. Lists can be looped over:</p>
+
+<pre><code>//Given that foo = &quot;bar&quot;
+&lt;{setalist mylist = &quot;baz&quot;,foo,1,&quot;bar&quot;}&gt;
+&lt;{loop mylist as item}&gt;
+	&lt;{item}&gt;
+&lt;{end}&gt;
+//Will render:
+baz
+bar
+1
+bar</code></pre>
+
+<h2>Addtolist</h2>
+
+<p>The &quot;Addtolist&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only add a value to an existing list. If the tag accidentally tries to set a value to a non-list the tag will silently fail. The tag can add either an object, number, or string to an existing list:</p>
+
+<pre><code>//Given that foo = &quot;bar&quot;
+&lt;{setalist mylist = &quot;baz&quot;,foo,1,&quot;bar&quot;}&gt;
+&lt;{addtolist &quot;wham!&quot; to mylist}&gt;
+&lt;{loop mylist as item}&gt;
+	&lt;{item}&gt;
+&lt;{end}&gt;
+//Will render:
+baz
+bar
+1
+bar
+wham!</code></pre>
+
+<h2>Setahash</h2>
+
+<p>The &quot;Setahash&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only set a hash table of items equal to some variable or object, or to replace the value of an existing variable or object. This hash table can contain a mixed set of types. Hash tables can be looped over:</p>
+
+<pre><code>//Given the foo = &quot;bar&quot;
+&lt;{setahash myhash = baz:&quot;bar&quot;,foo:foo,one:1,zero:0,empty:&quot;&quot;}&gt;
+&lt;{myhash.baz}&gt;
+&lt;{myhash.foo}&gt;
+&lt;{if myhash.one}&gt;&lt;{myhash.one}&gt;&lt;{end}&gt;
+&lt;{if !myhash.zero}&gt;&lt;{myhash.zero}&gt;&lt;{end}&gt;
+&lt;{if myhash.empty}&gt;&lt;{myhash.empty}&gt;&lt;{end}&gt;
+//Will render:
+&quot;bar&quot;
+&quot;bar&quot;
+1
+0</code></pre>
+
+<h2>Setaregex</h2>
+
+<p>The &quot;Setaregex&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only set a Regular Expression to some variable or object, or to replace the value of an existing variable or object. This tag will probably not be used to often, but there are tags throughout Noodles that can take a Regular Expression as parameter, allowing a more robust set of functionality. The tag can take either a string or object to be processed as a regular expression:</p>
+
+<pre><code>//Given that foo = &quot;bar&quot; and bar = &quot;foo&quot; and baz = &quot;foobar&quot;
+&lt;{setaregex reBarBaz = &quot;^(bar|baz)$&quot;}&gt;
+&lt;{if foo matches reBarBaz}&gt;foo matches&lt;{end}&gt;
+&lt;{if bar matches reBarBaz}&gt;bar matches&lt;{end}&gt;
+&lt;{if baz matches reBarBaz}&gt;baz matches&lt;{end}&gt;
+//Will render:
+foo matches
+bar matches
+
+</code></pre><h2>Loop</h2>
+
+<p>The loop tag for Noodles is the second most important control-flow tag. It does one thing, it loops over a specified object and renders a block of text for every key-value pair it encounters in the object it. There are three special keywords that are created and changed by each execution of the loop, &quot;__index&quot;, &quot;name&quot;, and &quot;value&quot;. These variables will only exist within the loop execution/scope/block, they will NOT exist as their lastly executed values:</p>
+
+<pre><code>//Where foo = {&quot;bar:&quot;baz&quot;,&quot;baz&quot;:[1,2,3,4]}
+&lt;{loop foo}&gt;
+	index:&lt;{__index}&gt;
+	&quot;name&quot;:&lt;{name}&gt;
+	&quot;value&quot;:&lt;{value}&gt;
+&lt;{end}&gt;
+index:&lt;{__index}&gt;
+//Will render as:
+	index:0
+	&quot;name&quot;:bar
+	&quot;value&quot;:baz
+
+	index:1
+	name:baz
+	value:
+index:	 </code></pre>
+
+<p>Note that a value that is an object simply renders as a blank space. A loop can be written in one other was and that is to set the value of each iteration to be referenced by some name:</p>
+
+<pre><code>//Where foo = {&quot;bar:&quot;baz&quot;,&quot;baz&quot;:1}
+&lt;{loop foo as bar}&gt;
+	&lt;{bar}&gt;
+&lt;{end}&gt;
+//Will render as:
+	baz
+
+	1</code></pre>
+
+<p>Loops may contain other tags in them, such as if tags, or set tags.</p>
+
+<h2>ExitLoop</h2>
+
+<p>Exitloop is a sub-tab of loop, which can only be used in a loop, it allows you to exit a loop whenever you wish. Usually it should be wrapped in some sort of a condition, but it can be used on its own, it simply means the loop will only iterate once up until the &quot;exitloop&quot; statement.</p>
+
+<pre><code>//Where foo = {&quot;bar:&quot;baz&quot;,&quot;baz&quot;:1,foo:&quot;bar&quot;}
+&lt;{loop foo as bar}&gt;
+	&lt;{bar}&gt;
+	&lt;{if __index == 1}&gt;&lt;{exitloop}&gt;&lt;{end}&gt;
+&lt;{end}&gt;
+//Will render as:
+baz
+
+1</code></pre>
+
+<h2>Continue</h2>
+
+<p>Continue is a sub-tag of loop, which can only be used in a loop, it allows you to continue out of the current iteration of the loop, but not to break out of the loop. It will most likely be wrapped in some condition, but it does not have to be.</p>
+
+<pre><code>//Where foo = {&quot;bar:&quot;baz&quot;,&quot;baz&quot;:1,foo:&quot;bar&quot;}
+&lt;{loop foo as bar}&gt;
+	&lt;{if __index == 1}&gt;&lt;{continue}&gt;&lt;{end}&gt;
+	&lt;{bar}&gt;
+&lt;{end}&gt;
+//Will render as:
+baz
+
+bar</code></pre><h2>Exit</h2>
+
+<p>&quot;Exit&quot; is a special tag which simply allows you to exit the current execution of a template and only allow everything before the &quot;exit&quot; tag to render:</p>
+
+<pre><code>&lt;{if !user.name}&gt;
+Invalid user name and/or password.
+&lt;{exit}&gt;
+&lt;{end}&gt;
+&lt;html&gt;
+	&lt;head&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+	.
+	.
+	.
+//will render:
+
+Invalid user name and/or password.</code></pre>
+	</article>
+</body>
+</html>

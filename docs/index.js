@@ -2,8 +2,9 @@ var HTTP = require('http'),
 	Noodles = require('./../../noodles'),
 	fs = require('fs'),
 	url = require('url'),
-	markdown = require('markdown').markdown,
-	pages = ['home','syntax','tags','plugins','warnings-errors'],
+	path = require('path'),
+	docsConfig = Noodles.Config.DocsConfig,
+	pages = docsConfig.pages,
 	rePages = new RegExp('^(' + pages.join('|') + '|)$');
 /**--module--
 name: Docs
@@ -75,84 +76,21 @@ name: Docs.getDocuments
 description: gets Documents from the files
 */
 Docs.getDocuments = function(fx){
-	var rawString = fs.readFileSync(__dirname + '/index.html').toString();
-	new Noodles.Template({
-		rawString : rawString,
-		metaData:'',
-		onFinishCompiling:function(template){
-			var i = pages.length,
-				t = i,
-				coretags = Noodles.Config.coretags,
-				article,page,plugins,l,m;
-			coretags.sort();
-			while(i--){
-				page = pages[i];
-				if(page !== 'plugins'){
-					if(page === "home"){
-						article = markdown.toHTML( fs.readFileSync(__dirname + '/./../README.md').toString() );
-					}
-					else if(page === "tags"){
-						article = markdown.toHTML( fs.readFileSync(__dirname + '/' + page + '.md').toString() );
-						m = 0;
-						l = coretags.length;
-						while(m < l){
-							article = article + markdown.toHTML( fs.readFileSync(__dirname + '/./../plugins/' + coretags[m] + '/readme.md').toString() );
-							m++;
-						}
-					}
-					else{
-						article = markdown.toHTML( fs.readFileSync(__dirname + '/' + page + '.md').toString() );
-					}
-					template.execute({
-						title:page[0].toUpperCase() + page.slice(1),
-						article:article
-					},
-					{
-						onRenderAll:function(string,context){
-							Docs.addToCache('page-' + context._others['title'].toLowerCase(), {
-								string:string,
-								buffer:new Buffer(string),
-								Length:string.length
-							});
-							t--;
-							if(t === 0){
-								 fx();
-							}
-						},
-						onFinish:function(time){}
-					});
-				}
-			}
-			//get plugins;
-			article = markdown.toHTML( fs.readFileSync(__dirname + '/plugins.md').toString() );
-			plugins = fs.readdirSync(__dirname + '/./../plugins');
-			plugins.sort();
-			coretags =  ',' + coretags.join() + ',';
-			for(l = plugins.length, i = 0; i < l; i++){
-				if(coretags.indexOf(',' + plugins[i] + ',') !== -1 || /^\./.test(plugins[i])) continue;
-				article = article + markdown.toHTML( fs.readFileSync(__dirname + '/./../plugins/' + plugins[i] + '/readme.md').toString() );
-			}
-			template.execute({
-				title:'Plugins',
-				article:article
-			},
-			{
-				onRenderAll:function(string,context){
-					Docs.addToCache('page-' + context._others['title'].toLowerCase(), {
-						string:string,
-						buffer:new Buffer(string),
-						Length:string.length
-					});
-					t--;
-					if(t === 0){
-						 fx();
-					}
-				},
-				onFinish:function(time){}
+	var pages = fs.readdirSync(__dirname+'/files'),
+		i = pages.length,
+		page,buffer,file;
+	while(i--){
+		page = pages[i];
+		file = __dirname + '/files/' + page;
+		if(path.existsSync(file))
+			buffer = fs.readFileSync(file);
+			Docs.addToCache('page-' + page.split('.')[0],{
+				buffer:buffer,
+				Length:buffer.length
 			});
-		}
-	});
-}
+	}
+	fx();
+};
 /**--Docs--
 name:listener
 description: listens for http requests
@@ -163,7 +101,7 @@ Docs.listener = function(request,response){
 	var URL = url.parse(request.url),
 		host = request.headers.host,
 		pathName = URL.pathname.slice(1),
-		domain = 'noodles',
+		domain = docsConfig.domain,
 		fullPath = 'http://' + host + '/' + pathName,
 		respObj;
 	if(host !== domain && host.toLowerCase() === domain || host === 'noodles' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase()) || pathName === ''){
@@ -183,6 +121,8 @@ Docs.listener = function(request,response){
 		response.end();
 	}
 }
+
 Docs.getDocuments(function(){
-	HTTP.createServer(Docs.listener).listen(80,'127.0.0.1');
+	console.log(docsConfig);
+	HTTP.createServer(Docs.listener).listen(docsConfig.port,docsConfig.domain);
 });

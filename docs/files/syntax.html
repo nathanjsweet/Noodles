@@ -1,0 +1,105 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<link href='http://fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
+	<title>Syntax - Noodles Documentation</title>
+	<style>
+	html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+	header{background:#e2e2e2;margin:24px auto 0;width:720px;font-family: 'Brawler', serif; padding:8px;}
+	header h1 {font-size:24px;margin:0 0 8px 6px;}
+	header nav li {float:left;padding:0 6px;}
+	header nav li:not(:last-child){border-right:2px solid #000;}
+	article{background:#e2e2e2;margin:0 auto;width:712px;font-family: 'Brawler', serif; padding:30px 12px;display:block; line-height:1.4;}
+	article h1:first-child{display:none;}
+	article h2{font-size:20px;}
+	article p{margin:12px 0;}
+	article pre{margin: 1em 0;
+		font-size: 12px;
+		background-color: white;
+		border: 1px solid #DDD;
+		padding: 5px;
+		line-height: 1.5em;
+		color: #444;
+		overflow: auto;
+		-webkit-box-shadow: rgba(0,0,0,0.07) 0 1px 2px inset;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Syntax - Noodles Documentation</h1>
+		<nav>
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li>Syntax</li>
+				<li><a href="/tags">Tags</a></li>
+				<li><a href="/plugins">Plugins</a></li>
+				<li><a href="warnings-errors">Warnings/Errors</a></li>
+			</ul>
+		</nav>
+	</header>
+	<article>
+		<h1>Syntax</h1>
+
+<h2>Introduction</h2>
+
+<p>Noodles Syntax is really quite simple to think about. It is designed to be as unobtrusive as possible, without being logicless. The following is an example of how to access an object in the current context:</p>
+
+<pre><code>//given that foo eqals bar
+&lt;{foo}&gt; //would render as &quot;bar&quot;
+&lt;{&quot;foo&quot;}&gt; //would render as &quot;foo&quot;
+something &lt;{foo}&gt; baz //would render as &quot;something bar baz&quot;</code></pre>
+
+<p>There are additional ways to access values in Noodles. A variable, string, number, or another object can be used to access the property of another object:</p>
+
+<pre><code>//Given that foo is an object with the properties one, two, three, respectively equal to 1, 2, and 3
+//And given that bar is a variable that equals the string, &quot;three&quot;
+&lt;{foo.one}&gt; //woud render as 1
+&lt;{foo[&quot;two&quot;]}&gt; // would render as 2
+&lt;{foo[bar]}&gt; // would render as 3</code></pre>
+
+<p>All that a Noodle&#39;s template really does is control the flow of text rendering. So some Noodles tags render their block scope rather than &quot;doing anything&quot; themselves, as accessing an object in the above example does. A Normal HTML document, for example, could be easily utilize Noodles for its flow-control rendering:</p>
+
+<pre><code>//Where title is the key of some value.
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+	&lt;meta charset=&quot;utf-8&quot;&gt;
+	&lt;title&gt;&lt;{if !title}&gt;Home&lt;{else}&gt;&lt;{title}&gt;&lt;{end}&gt; - Noodles Documentation&lt;/title&gt;
+	.
+	.
+	.</code></pre>
+
+<p>Most templates will have a pre-existing set of objects that populate each page, such as a &quot;request&quot; object. Also, there MAY be a way to implement mini-templating variables that can handle complex operations out of the way of the flow-control of the document itself. These variables or &quot;meta-data&quot; may not always available to write, but if they are, they would probably look something like this:</p>
+
+<pre><code>htmltitle = &lt;{if !title}&gt;&lt;{title}&gt;&lt;{else}&gt;&lt;{title}&gt;&lt;{end}&gt;
+pageParameter = &lt;{loop request as param}&gt;&lt;{if param.key = &quot;page&quot;}&gt;&lt;{param.value}&gt;&lt;{exitloop}&gt;&lt;{end}&gt;&lt;{end}&gt;</code></pre>
+
+<p>Such a set of &quot;meta-data&quot; could be used likewise:</p>
+
+<pre><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+	&lt;meta charset=&quot;utf-8&quot;&gt;
+	&lt;title&gt;&lt;{htmlTitle}&gt; - &lt;{pageParameter}&gt;&lt;/title&gt;
+	.
+	.
+	.</code></pre>
+
+<p>The &quot;meta-data&quot; in this example would execute it&#39;s calculation every time it is accessed, however the if the calculation will always render the same value, base on the current execution, then a backslash (&quot;\&quot;) can be added to before the variable declaration to make sure the execution of that variable only occurs once per execution of the template, and that the first execution will be saved to that variable name. Also, comments can be put into the &quot;meta-data&quot; by putting a hash (&quot;#&quot;) before them:</p>
+
+<pre><code>#this is a comment and won&#39;t affect the meta data in anyway
+#htmltitle = &lt;{title}&gt;
+#the variable above won&#39;t be saved in anyway
+\htmltitle = &lt;{if !title}&gt;&lt;{title}&gt;&lt;{else}&gt;&lt;{title}&gt;&lt;{end}&gt;
+#the above variable will only run once per execution of the template it belongs to, if it is even accessed more than once.
+pageParameter = &lt;{loop request as param}&gt;&lt;{if param.key = &quot;page&quot;}&gt;&lt;{param.value}&gt;&lt;{exitloop}&gt;&lt;{end}&gt;&lt;{end}&gt;</code></pre>
+
+<p>Remember, while there are more than three types of data in Noodles (some objects may contain things like arrays or regular expressions), there are only three different ways of manipulating data in Noodles. Numbers, Strings, and Objects, if you keep this in mind it will always make whatever task you&#39;re trying to accomplish easier to think about an accomplish.</p>
+	</article>
+</body>
+</html>
