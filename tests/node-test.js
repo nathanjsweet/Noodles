@@ -1,4 +1,5 @@
 var Noodles = require('./../../noodles');
+Date.now = require('microtime').now;
 var rawString = [
 '<{set one = 1}>',
 '<{setahash myhash = nathan:"sweet",kate:"sweet",andrew:"soerens",one:one}>',
@@ -21,7 +22,7 @@ new Noodles.Template({
 	onFinishCompiling:function(template){
 		time = Date.now() - time;
 		myTemp = template;
-		console.log('compile time: ',time,'ms');
+		console.log('compile time: ',time,'μs');
 		testTemp(myTemp,10000);
 	}
 });
@@ -55,7 +56,8 @@ function logTime(arr){
 		upperBound = 0,
 		lowerBound = Number.POSITIVE_INFINITY,
 		standardSum = 0,
-		mean,sigma;
+		mean,sigma,median;
+	arr.sort(function(a,b){return a-b;});
 	for(var i = 0, l = arr.length; i < l; i++){
 		if(typeof arr[i] !== "number"){
 			setTimeout(logTime,1000,arr);
@@ -71,10 +73,12 @@ function logTime(arr){
 		standardSum += Math.pow((arr[i] - mean),2);
 	}
 	sigma = Math.sqrt(standardSum/(l-1));
-	console.log('The average time was: ', totalTime/l,'ms.\n',
-	'The upper bound time was: ', upperBound, 'ms.\n',
-	'The lower bound time was: ', lowerBound,'ms.\n',
-	'The standard deviation was:',sigma,'ms.\n',
+	median  = arr[Math.round(arr.length/2) - 1];
+	console.log('The mean time was: ', totalTime/l,'μs.\n',
+	'The median time was:',median,'μs.\n',
+	'The upper bound time was: ', upperBound, 'μs.\n',
+	'The lower bound time was: ', lowerBound,'μs.\n',
+	'The standard deviation was:',sigma,'μs.\n',
 	'The number of runs was: ',l,'.');
 	
 		
