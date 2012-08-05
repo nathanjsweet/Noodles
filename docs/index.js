@@ -124,22 +124,26 @@ Docs.listener = function(request,response){
 		pathName = URL.pathname.slice(1),
 		domain = docsConfig.domain,
 		fullPath = 'http://' + host + '/' + pathName,
-		cacheObj = Docs.getFromCache('page-' + pathName);
-		
+		extension = pathName.split('.'),
+		cacheObj;
+	extension = (extension.length === 1 ? 'html' : extension[extension.length -1].toLowerCase());
 	if(host !== domain && host.toLowerCase() === domain || host === 'noodles' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase()) || pathName === ''){
 		if(pathName === ''){
 			fullPath += 'home';
 		}
 		response.writeHead(301,{'Location':fullPath.toLowerCase(), 'Expires': (new Date).toGMTString()});
 		response.end();
-	} 
-	else if(cacheObj !== null){
-		response.writeHead(200,{'Content-Type':'text/html','Content-Length':cacheObj.Length});
-		response.end(cacheObj.buffer);
 	}
 	else{
-		response.writeHead(404,{'Expires': (new Date).toGMTString()});
-		response.end();
+	cacheObj = Docs.getFromCache('page-' + pathName) 
+		if(cacheObj !== null){
+			response.writeHead(200,{'Content-Type':'text/' + extension,'Content-Length':cacheObj.Length});
+			response.end(cacheObj.buffer);
+		}
+		else{
+			response.writeHead(404,{'Expires': (new Date).toGMTString()});
+			response.end();
+		}
 	}
 }
 
