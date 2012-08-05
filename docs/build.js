@@ -33,8 +33,9 @@ Docs.buildFileTexts = function(noodlesTemplate){
 		pagesList = [],
 		reWord = /\b(\w)/g,
 		regular,overt,
-		page,article,title,m,coreTagStr,plugins;
+		page,article,title,m,coreTagStr,plugins,obj,leg;
 	while(i--){
+		obj = {};
 		page = pages[i];
 		if(page !== 'plugins'){
 			if(page === "home"){
@@ -44,15 +45,24 @@ Docs.buildFileTexts = function(noodlesTemplate){
 				article = markdown.toHTML( fs.readFileSync(__dirname + '/resources/' + page + '.md').toString() );
 				m = 0;
 				l = coretags.length;
+				leg = 0;
 				while(m < l){
 					if(path.existsSync(__dirname + '/./../plugins/' + coretags[m] + '/readme.md')){
+						leg++;
 						article = article + markdown.toHTML( fs.readFileSync(__dirname + '/./../plugins/' + coretags[m] + '/readme.md').toString() );
 					}
 					else if(path.existsSync(__dirname + '/./../../noodles_plugins/' + coretags[m] + '/readme.md')){
+						leg++;
 						article = article + markdown.toHTML( fs.readFileSync(__dirname + '/./../../noodles_plugins/' + coretags[m] + '/readme.md').toString() );
 					}
 					m++;
 				}
+				if(leg > 1){
+					article = Docs.anchorizeH2Tags(article);
+					obj.subnav = article.list;
+					article = article.text;
+				}
+					
 			}
 			else{
 				article = markdown.toHTML( fs.readFileSync(__dirname + '/resources/' + page + '.md').toString() );
@@ -68,24 +78,55 @@ Docs.buildFileTexts = function(noodlesTemplate){
 				plugins.concat(fs.readdirSync(__dirname + '/./../../noodles_plugins'));
 			plugins.sort();
 			coreTagStr =  ',' + coretags.join() + ',';
+			leg = 0;
 			for(l = plugins.length, m = 0; m < l; m++){
 				if(coreTagStr.indexOf(',' + plugins[m] + ',') !== -1 || /^\./.test(plugins[m])) continue;
-				if(regular && path.existsSync(__dirname + '/./../plugins/'+plugins[m]+'readme.md'))
+				if(regular && path.existsSync(__dirname + '/./../plugins/'+plugins[m]+'readme.md')){
+					leg++;
 					article = article + markdown.toHTML( fs.readFileSync(__dirname + '/./../plugins/' + plugins[m] + '/readme.md').toString() );
-				else if(overt && path.existsSync(__dirname + '/./../../noodles_plugins/'+plugins[m]+'readme.md'))
+				}
+				else if(overt && path.existsSync(__dirname + '/./../../noodles_plugins/'+plugins[m]+'readme.md')){
+					leg++;
 					article = article + markdown.toHTML( fs.readFileSync(__dirname + '/./../../noodles_plugins/' + plugins[m] + '/readme.md').toString() );
+				}
+			}
+			if(leg > 1){
+				article = Docs.anchorizeH2Tags(article);
+				obj.subnav = article.list;
+				article = article.text;
 			}
 		}
 		title = page.replace(reWord,function(a){
 			return a.toUpperCase();
-		})
-		pagesList.push({
-			page:page,
-			article:article,
-			title:title
 		});
+		obj.page = page;
+		obj.article = article;
+		obj.title = title;
+		pagesList.push(obj);
 	}
 	return pagesList;
+};
+/*--Docs--
+name:anchorizeH2Tags
+description: adds and id to each h2 tag
+@param{string}
+@return{string}
+*/
+Docs.anchorizeH2Tags = function(article){
+	var reH2 = /(\<h2)\>([^\<]+)/g,
+		tmpArr = [];
+	article = article.replace(/\<h1\>[^\<]+\<\/h1\>/g,'');
+	article = article.replace(reH2,function(a,b,c){
+		var cL = c.toLowerCase();
+		if(cL === "introduction")
+			return "<h2>" + c;
+		tmpArr.push(cL);
+		return '<h2 id="'+cL+'-tag">' + c;
+	});
+	return {
+		list:tmpArr,
+		text:article
+	};
 };
 /*--Docs--
 name:renderDocs
@@ -97,10 +138,7 @@ Docs.renderDocs = function(noodleTemplate){
 		page;
 	while(i--){
 		page = pageList[i];
-		noodleTemplate.execute({
-			title:page.title,
-			article:page.article
-		},{
+		noodleTemplate.execute(page,{
 			onRenderAll:function(string,context){
 				var fname = context._others['title'].toLowerCase();
 				fs.writeSync(fs.openSync(__dirname+'/files/'+fname+'.html','w'),string,0,string.length);

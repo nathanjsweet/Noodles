@@ -113,6 +113,22 @@ Docs.getDocuments = function(fx){
 	fx();
 };
 /**--Docs--
+name:getExtension
+description: returns proper extension based on file request
+@param{string}
+@return{object}
+*/
+Docs.getExtension = function(path){
+	var ext = path.split('.'),
+		extension = (ext.length === 1 ? 'html' : ext[ext.length -1].toLowerCase());
+	if(extension === 'js')
+		extension = 'javascript';
+	return {
+		extension : extension,
+		contentType : 'text/' + extension
+	};
+}
+/**--Docs--
 name:listener
 description: listens for http requests
 @param{request}
@@ -124,9 +140,9 @@ Docs.listener = function(request,response){
 		pathName = URL.pathname.slice(1),
 		domain = docsConfig.domain,
 		fullPath = 'http://' + host + '/' + pathName,
-		extension = pathName.split('.'),
+		extension = Docs.getExtension(pathName),
 		cacheObj;
-	extension = (extension.length === 1 ? 'html' : extension[extension.length -1].toLowerCase());
+	
 	if(host !== domain && host.toLowerCase() === domain || host === 'noodles' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase()) || pathName === ''){
 		if(pathName === ''){
 			fullPath += 'home';
@@ -135,9 +151,9 @@ Docs.listener = function(request,response){
 		response.end();
 	}
 	else{
-	cacheObj = Docs.getFromCache('page-' + pathName) 
+		cacheObj = Docs.getFromCache('page-' + pathName) 
 		if(cacheObj !== null){
-			response.writeHead(200,{'Content-Type':'text/' + extension,'Content-Length':cacheObj.Length});
+			response.writeHead(200,{'Content-Type': extension.contentType,'Content-Length':cacheObj.Length});
 			response.end(cacheObj.buffer);
 		}
 		else{

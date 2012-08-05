@@ -3,29 +3,62 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link href='http://fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
 	<title>Tags - Noodles Documentation</title>
 	<link rel="stylesheet" href="/bootstrap.min.css"/>
+	<link rel="stylesheet" href="/bootstrap.responsive.css"/>
+	<link rel="stylesheet" href="/noodles.css"/>
 </head>
-<body>
-	<header>
-		<h1>Tags - Noodles Documentation</h1>
-		<nav>
-			<ul>
-				<li><a href="/">Home</a></li>
-				<li><a href="/syntax">Syntax</a></li>
-				<li>Tags</li>
-				<li><a href="/plugins">Plugins</a></li>
-				<li><a href="warnings-errors">Warnings/Errors</a></li>
-			</ul>
-		</nav>
-	</header>
-	<article>
+<body data-spy="scroll" data-target=".subnav" data-offset="50">
+	<div class="navbar navbar-fixed-top">
+	   <div class="navbar-inner">
+	     <div class="container">
+	       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	       </a>
+	       <a class="brand" href="/home">Noodles</a>
+	       <nav class="nav-collapse" id="main-menu">
+				<ul class="nav">
+					<li><a href="/">Home</a></li>
+					<li><a href="/syntax">Syntax</a></li>
+					<li><a href="/tags">Tags</a></li>
+					<li><a href="/plugins">Plugins</a></li>
+					<li><a href="warnings-errors">Warnings/Errors</a></li>
+				</ul>
+	       </nav>
+	     </div>
+	   </div>
+	 </div>
+	<div class="container">
+		  
+		<header class="jumbotron subhead" id="overview">
 		<h1>Tags</h1>
+		<div class="subnav">
+		    <ul class="nav nav-pills">
+			
+				<li><a href="#if-tag">if</a></li>
+				<li><a href="#set-tag">set</a></li>
+				<li><a href="#setalist-tag">setalist</a></li>
+				<li><a href="#addtolist-tag">addtolist</a></li>
+				<li><a href="#setahash-tag">setahash</a></li>
+				<li><a href="#setaregex-tag">setaregex</a></li>
+				<li><a href="#loop-tag">loop</a></li>
+				<li><a href="#exitloop-tag">exitloop</a></li>
+				<li><a href="#continue-tag">continue</a></li>
+				<li><a href="#exit-tag">exit</a></li>
+		    </ul>
+		  </div>
+		</header>
+		
+	<article class="row">
+		<div class="span12">
+		
 
 <h2>Introduction</h2>
 
-<p>Along with accessing objects, Noodles tags can be used to utilize methods or &quot;macros&quot;. Certain keywords, thus, cannot be utilized as object names. In addition to this list there may be extra &quot;plugins&quot; that provide additional macro-functionality. Most of the tags are self-contained, but a few like &quot;if&quot; and &quot;loop&quot; are control-flow tags that render blocks of text.</p><h2>If</h2>
+<p>Along with accessing objects, Noodles tags can be used to utilize methods or &quot;macros&quot;. Certain keywords, thus, cannot be utilized as object names. In addition to this list there may be extra &quot;plugins&quot; that provide additional macro-functionality. Most of the tags are self-contained, but a few like &quot;if&quot; and &quot;loop&quot; are control-flow tags that render blocks of text.</p><h2 id="if-tag">If</h2>
 
 <p>The if tag is the primary flow-control tag in Noodles. It can do a lot. It is primarily useful in evaluating a set of conditions and rendering text on those sets of conditions. Within the if tag the keywords &quot;and&quot; and &quot;or&quot; can be used to delimit sets of conditions within one if statement. Similar to most programming languages conditions are separated by &quot;or&quot;s first and groups of &quot;and&quot;s are evaluated together first. Notice that objects can be compared to other objects or strings.</p>
 
@@ -74,7 +107,7 @@
 	//always be case insensitive</code></pre>
 
 <p>Notice that all string comparisons are case-insensitive, notice also that you can use objects to refer to strings so &#39;foo == &quot;bar&quot;&#39; will
-evaluate the exact same as &#39;foo == baz&#39; if baz refers to &quot;bar&quot;. Also note that all of these comparisons can be strung together with other comparisons using &quot;or&quot; and &quot;and&quot;.</p><h2>Set</h2>
+evaluate the exact same as &#39;foo == baz&#39; if baz refers to &quot;bar&quot;. Also note that all of these comparisons can be strung together with other comparisons using &quot;or&quot; and &quot;and&quot;.</p><h2 id="set-tag">Set</h2>
 
 <p>The Set tag is used to set a variable name to some value, it can be used to create a new variable or object, or to replace the value of an existing variable or object. In the simplest form a value is set to be equal to either a string, a number, or another object:</p>
 
@@ -85,7 +118,7 @@ evaluate the exact same as &#39;foo == baz&#39; if baz refers to &quot;bar&quot;
 //Now bar = &quot;foo&quot;, baz = &quot;bar&quot;, and one is equal to the integer 1
 //Baz equals bar because it is equal to the value of foo; if foo is changed it will not change it&#39;s value</code></pre>
 
-<h2>Setalist</h2>
+<h2 id="setalist-tag">Setalist</h2>
 
 <p>The &quot;Setalist&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only set a list of items equal to some variable or object, or to replace the value of an existing variable or object. This list can contain a mixed set of types. Lists can be looped over:</p>
 
@@ -100,7 +133,7 @@ bar
 1
 bar</code></pre>
 
-<h2>Addtolist</h2>
+<h2 id="addtolist-tag">Addtolist</h2>
 
 <p>The &quot;Addtolist&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only add a value to an existing list. If the tag accidentally tries to set a value to a non-list the tag will silently fail. The tag can add either an object, number, or string to an existing list:</p>
 
@@ -117,7 +150,7 @@ bar
 bar
 wham!</code></pre>
 
-<h2>Setahash</h2>
+<h2 id="setahash-tag">Setahash</h2>
 
 <p>The &quot;Setahash&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only set a hash table of items equal to some variable or object, or to replace the value of an existing variable or object. This hash table can contain a mixed set of types. Hash tables can be looped over:</p>
 
@@ -134,7 +167,7 @@ wham!</code></pre>
 1
 0</code></pre>
 
-<h2>Setaregex</h2>
+<h2 id="setaregex-tag">Setaregex</h2>
 
 <p>The &quot;Setaregex&quot; tag, which is simply a sub-tag of &quot;Set&quot; is used to specifically and only set a Regular Expression to some variable or object, or to replace the value of an existing variable or object. This tag will probably not be used to often, but there are tags throughout Noodles that can take a Regular Expression as parameter, allowing a more robust set of functionality. The tag can take either a string or object to be processed as a regular expression:</p>
 
@@ -147,7 +180,7 @@ wham!</code></pre>
 foo matches
 bar matches
 
-</code></pre><h2>Loop</h2>
+</code></pre><h2 id="loop-tag">Loop</h2>
 
 <p>The loop tag for Noodles is the second most important control-flow tag. It does one thing, it loops over a specified object and renders a block of text for every key-value pair it encounters in the object it. There are three special keywords that are created and changed by each execution of the loop, &quot;__index&quot;, &quot;name&quot;, and &quot;value&quot;. These variables will only exist within the loop execution/scope/block, they will NOT exist as their lastly executed values:</p>
 
@@ -181,7 +214,7 @@ index:	 </code></pre>
 
 <p>Loops may contain other tags in them, such as if tags, or set tags.</p>
 
-<h2>ExitLoop</h2>
+<h2 id="exitloop-tag">ExitLoop</h2>
 
 <p>Exitloop is a sub-tab of loop, which can only be used in a loop, it allows you to exit a loop whenever you wish. Usually it should be wrapped in some sort of a condition, but it can be used on its own, it simply means the loop will only iterate once up until the &quot;exitloop&quot; statement.</p>
 
@@ -195,7 +228,7 @@ baz
 
 1</code></pre>
 
-<h2>Continue</h2>
+<h2 id="continue-tag">Continue</h2>
 
 <p>Continue is a sub-tag of loop, which can only be used in a loop, it allows you to continue out of the current iteration of the loop, but not to break out of the loop. It will most likely be wrapped in some condition, but it does not have to be.</p>
 
@@ -207,7 +240,7 @@ baz
 //Will render as:
 baz
 
-bar</code></pre><h2>Exit</h2>
+bar</code></pre><h2 id="exit-tag">Exit</h2>
 
 <p>&quot;Exit&quot; is a special tag which simply allows you to exit the current execution of a template and only allow everything before the &quot;exit&quot; tag to render:</p>
 
@@ -225,6 +258,41 @@ Invalid user name and/or password.
 //will render:
 
 Invalid user name and/or password.</code></pre>
+		</div>
 	</article>
+	<footer class="footer">
+		<span class="pull-left">Copyright 2012 <a href="http://nathansweet.me/" target="_blank">Nathan Sweet</a></span>
+	<ul class="pull-right">
+		<li><a href="#">Back To Top</a></li>
+		<li>"Spacelab" Theme From <a href="http://bootswatch.com/spacelab" target="_blank">Bootswatch</a></li>
+	</ul>
+	</footer>
+	</div>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="/bootstrap.min.js"></script>
+	
+	<script>
+
+	  $(function(){
+	    var $win = $(window)
+	      , $nav = $('.subnav')
+		  , navHeight = $('.navbar').first().height()
+	      , navTop = $('.subnav').length && $('.subnav').offset().top - navHeight
+	      , isFixed = 0
+	    processScroll()
+	    $win.on('scroll', processScroll);
+	    function processScroll() {
+	      var i, scrollTop = $win.scrollTop()
+	      if (scrollTop >= navTop && !isFixed) {
+	        isFixed = 1
+	        $nav.addClass('subnav-fixed')
+	      } else if (scrollTop <= navTop && isFixed) {
+	        isFixed = 0
+	        $nav.removeClass('subnav-fixed')
+	      }
+	    }
+	});
+	</script>
+	
 </body>
 </html>

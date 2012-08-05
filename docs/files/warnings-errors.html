@@ -3,24 +3,38 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link href='http://fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
 	<title>Warnings-Errors - Noodles Documentation</title>
 	<link rel="stylesheet" href="/bootstrap.min.css"/>
+	<link rel="stylesheet" href="/bootstrap.responsive.css"/>
+	<link rel="stylesheet" href="/noodles.css"/>
 </head>
-<body>
-	<header>
-		<h1>Warnings-Errors - Noodles Documentation</h1>
-		<nav>
-			<ul>
-				<li><a href="/">Home</a></li>
-				<li><a href="/syntax">Syntax</a></li>
-				<li><a href="/tags">Tags</a></li>
-				<li><a href="/plugins">Plugins</a></li>
-				<li>Warnings/Errors</li>
-			</ul>
-		</nav>
-	</header>
-	<article>
+<body data-spy="scroll" data-target=".subnav" data-offset="50">
+	<div class="navbar navbar-fixed-top">
+	   <div class="navbar-inner">
+	     <div class="container">
+	       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	       </a>
+	       <a class="brand" href="/home">Noodles</a>
+	       <nav class="nav-collapse" id="main-menu">
+				<ul class="nav">
+					<li><a href="/">Home</a></li>
+					<li><a href="/syntax">Syntax</a></li>
+					<li><a href="/tags">Tags</a></li>
+					<li><a href="/plugins">Plugins</a></li>
+					<li><a href="warnings-errors">Warnings/Errors</a></li>
+				</ul>
+	       </nav>
+	     </div>
+	   </div>
+	 </div>
+	<div class="container">
+		
+	<article class="row">
+		<div class="span12">
 		<h1>Warnings &amp; Errors</h1>
 
 <h2>Introduction</h2>
@@ -28,6 +42,18 @@
 <p>The following is a list of warnings and errors that can be encountered in the Noodles core. The definition of a warning is a text based flag that informs you of some problem (be it malformed syntax, etc) that occurred while compiling your template. Warnings don&#39;t necessitate that Noodles will be unable to handle the execution of your template, and some warnings may not affect the execution at all, but a it&#39;s best to try to create warning free templates as fewer errors are likely to occur. Warnings simply help you avoid errors.</p>
 
 <p>Errors can be defined as problems that occur at your template&#39;s run time. Errors are almost always correct. That is to say, errors usually mean that something went wrong with the template and it is very likely that your template either didn&#39;t render or didn&#39;t render as you intended. The following is a list of warnings and errors that may occur, and what you can do to fix them (or how you can go about debugging them).</p>
+		</div>
 	</article>
+	<footer class="footer">
+		<span class="pull-left">Copyright 2012 <a href="http://nathansweet.me/" target="_blank">Nathan Sweet</a></span>
+	<ul class="pull-right">
+		<li><a href="#">Back To Top</a></li>
+		<li>"Spacelab" Theme From <a href="http://bootswatch.com/spacelab" target="_blank">Bootswatch</a></li>
+	</ul>
+	</footer>
+	</div>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="/bootstrap.min.js"></script>
+	
 </body>
 </html>

@@ -3,24 +3,38 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link href='http://fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
 	<title>Home - Noodles Documentation</title>
 	<link rel="stylesheet" href="/bootstrap.min.css"/>
+	<link rel="stylesheet" href="/bootstrap.responsive.css"/>
+	<link rel="stylesheet" href="/noodles.css"/>
 </head>
-<body>
-	<header>
-		<h1>Home - Noodles Documentation</h1>
-		<nav>
-			<ul>
-				<li>Home</li>
-				<li><a href="/syntax">Syntax</a></li>
-				<li><a href="/tags">Tags</a></li>
-				<li><a href="/plugins">Plugins</a></li>
-				<li><a href="warnings-errors">Warnings/Errors</a></li>
-			</ul>
-		</nav>
-	</header>
-	<article>
+<body data-spy="scroll" data-target=".subnav" data-offset="50">
+	<div class="navbar navbar-fixed-top">
+	   <div class="navbar-inner">
+	     <div class="container">
+	       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	       </a>
+	       <a class="brand" href="/home">Noodles</a>
+	       <nav class="nav-collapse" id="main-menu">
+				<ul class="nav">
+					<li><a href="/">Home</a></li>
+					<li><a href="/syntax">Syntax</a></li>
+					<li><a href="/tags">Tags</a></li>
+					<li><a href="/plugins">Plugins</a></li>
+					<li><a href="warnings-errors">Warnings/Errors</a></li>
+				</ul>
+	       </nav>
+	     </div>
+	   </div>
+	 </div>
+	<div class="container">
+		
+	<article class="row">
+		<div class="span12">
 		<h1>Noodles Templating System</h1>
 
 <h3>Created by Nathan Sweet</h3>
@@ -41,6 +55,18 @@ The templating engine won&#39;t freak out over mistakes and will gloss over them
 providing a warning system that can be viewed if the writer of the template wishes. The goal of the engine of the Noodles language,
 is to offer the most high-performance engine possible with the overarching goal of making plugins as easy to write
 as possible.</p>
+		</div>
 	</article>
+	<footer class="footer">
+		<span class="pull-left">Copyright 2012 <a href="http://nathansweet.me/" target="_blank">Nathan Sweet</a></span>
+	<ul class="pull-right">
+		<li><a href="#">Back To Top</a></li>
+		<li>"Spacelab" Theme From <a href="http://bootswatch.com/spacelab" target="_blank">Bootswatch</a></li>
+	</ul>
+	</footer>
+	</div>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="/bootstrap.min.js"></script>
+	
 </body>
 </html>

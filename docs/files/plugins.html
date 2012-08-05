@@ -3,24 +3,38 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link href='http://fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Brawler' rel='stylesheet' type='text/css'>
 	<title>Plugins - Noodles Documentation</title>
 	<link rel="stylesheet" href="/bootstrap.min.css"/>
+	<link rel="stylesheet" href="/bootstrap.responsive.css"/>
+	<link rel="stylesheet" href="/noodles.css"/>
 </head>
-<body>
-	<header>
-		<h1>Plugins - Noodles Documentation</h1>
-		<nav>
-			<ul>
-				<li><a href="/">Home</a></li>
-				<li><a href="/syntax">Syntax</a></li>
-				<li><a href="/tags">Tags</a></li>
-				<li>Plugins</li>
-				<li><a href="warnings-errors">Warnings/Errors</a></li>
-			</ul>
-		</nav>
-	</header>
-	<article>
+<body data-spy="scroll" data-target=".subnav" data-offset="50">
+	<div class="navbar navbar-fixed-top">
+	   <div class="navbar-inner">
+	     <div class="container">
+	       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	         <span class="icon-bar"></span>
+	       </a>
+	       <a class="brand" href="/home">Noodles</a>
+	       <nav class="nav-collapse" id="main-menu">
+				<ul class="nav">
+					<li><a href="/">Home</a></li>
+					<li><a href="/syntax">Syntax</a></li>
+					<li><a href="/tags">Tags</a></li>
+					<li><a href="/plugins">Plugins</a></li>
+					<li><a href="warnings-errors">Warnings/Errors</a></li>
+				</ul>
+	       </nav>
+	     </div>
+	   </div>
+	 </div>
+	<div class="container">
+		
+	<article class="row">
+		<div class="span12">
 		<h1>Plugins</h1>
 
 <h2>Introduction</h2>
@@ -30,6 +44,18 @@
 <pre><code>plugins = foo,bar</code></pre>
 
 <p>Plugins can do a number of things. Many plugins simply provide a set of tags that can be used like &quot;date&quot;, or &quot;set&quot;, to provide additional functionality to the Noodles runtime, but some plugins might do special things the the page before it is compiled, or right before it&#39;s executed. These plugins will inform you in this document about the special things they may do, or the new set of syntax they may provide.</p>
+		</div>
 	</article>
+	<footer class="footer">
+		<span class="pull-left">Copyright 2012 <a href="http://nathansweet.me/" target="_blank">Nathan Sweet</a></span>
+	<ul class="pull-right">
+		<li><a href="#">Back To Top</a></li>
+		<li>"Spacelab" Theme From <a href="http://bootswatch.com/spacelab" target="_blank">Bootswatch</a></li>
+	</ul>
+	</footer>
+	</div>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="/bootstrap.min.js"></script>
+	
 </body>
 </html>
