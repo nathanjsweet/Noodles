@@ -56,12 +56,34 @@ description: gets value from key from cache object
 @param{string}
 */
 Docs.getFromCache = function(key){
-	if(typeof Docs.cache[key] === "undefined") return null;
-	if(Docs.cache[key].expires <= Date.now()){
+	if(typeof Docs.cache[key] === "undefined" || Docs.cache[key].expires <= Date.now()){
 		delete Docs.cache[key];
-		return null;
+		return Docs.getFile(key);
 	}
 	return Docs.cache[key];
+};
+/**--Docs--
+name: getFile
+description: gets file from key
+@param{string}
+*/
+Docs.getFile = function(key,prefix){
+	if(prefix)
+		key = 'page-' + key;
+	
+	var page =  key.slice('page-'.length),
+		file = __dirname + '/files/' + page,
+		extension = key.split('.');
+	
+	key = (extension[extension.length - 1].toLowerCase() === "html" ? key.split('.')[0] : key);
+	
+	if(path.existsSync(file)){
+		buffer = fs.readFileSync(file);
+		Docs.addToCache(key,{
+			buffer:buffer,
+			Length:buffer.length
+		});
+	}
 };
 /**--Docs--
 name: deleteFromCache
@@ -80,14 +102,7 @@ Docs.getDocuments = function(fx){
 		i = pages.length,
 		page,buffer,file;
 	while(i--){
-		page = pages[i];
-		file = __dirname + '/files/' + page;
-		if(path.existsSync(file))
-			buffer = fs.readFileSync(file);
-			Docs.addToCache('page-' + page.split('.')[0],{
-				buffer:buffer,
-				Length:buffer.length
-			});
+		Docs.getFile(pages[i],true);
 	}
 	fx();
 };
