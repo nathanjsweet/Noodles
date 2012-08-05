@@ -106,7 +106,8 @@ var Loop = function(Template,expression){
 	
 	if(expression.length >= 4){
 		this.setObject = new Noodles.Object(this.template,expression[3]);
-		if(this.setObject.key.order.length > 1){
+		console.log(this.setObject);
+		if(this.setObject.order.length > 1){
 			Noodles.Utilities.warning(Template,'Loop cannot set an object with multiple levels');
 			this.skip = true;
 			delete this.setObjet;
