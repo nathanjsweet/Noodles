@@ -73,16 +73,22 @@ Docs.getFile = function(key,prefix){
 	
 	var page =  key.slice('page-'.length),
 		file = __dirname + '/files/' + page,
-		extension = key.split('.');
+		extension = key.split('.'),
+		obj;
 	
 	key = (extension[extension.length - 1].toLowerCase() === "html" ? key.split('.')[0] : key);
 	
 	if(path.existsSync(file)){
 		buffer = fs.readFileSync(file);
-		Docs.addToCache(key,{
+		obj = {
 			buffer:buffer,
 			Length:buffer.length
-		});
+		}
+		Docs.addToCache(key,obj);
+		return obj;
+	}
+	else{
+		return null;
 	}
 };
 /**--Docs--
@@ -118,7 +124,8 @@ Docs.listener = function(request,response){
 		pathName = URL.pathname.slice(1),
 		domain = docsConfig.domain,
 		fullPath = 'http://' + host + '/' + pathName,
-		respObj;
+		cacheObj = Docs.getFromCache('page-' + pathName);
+		
 	if(host !== domain && host.toLowerCase() === domain || host === 'noodles' && !rePages.test(pathName) && rePages.test(pathName.toLowerCase()) || pathName === ''){
 		if(pathName === ''){
 			fullPath += 'home';
@@ -126,10 +133,9 @@ Docs.listener = function(request,response){
 		response.writeHead(301,{'Location':fullPath.toLowerCase(), 'Expires': (new Date).toGMTString()});
 		response.end();
 	} 
-	else if(rePages.test(pathName)){
-		respObj = Docs.getFromCache('page-' + pathName);
-		response.writeHead(200,{'Content-Type':'text/html','Content-Length':respObj.Length});
-		response.end(respObj.buffer);
+	else if(cacheObj !== null){
+		response.writeHead(200,{'Content-Type':'text/html','Content-Length':cacheObj.Length});
+		response.end(cacheObj.buffer);
 	}
 	else{
 		response.writeHead(404,{'Expires': (new Date).toGMTString()});
@@ -138,6 +144,6 @@ Docs.listener = function(request,response){
 }
 
 Docs.getDocuments(function(){
-	console.log(docsConfig);
+	console.log('listening...');
 	HTTP.createServer(Docs.listener).listen(docsConfig.port,docsConfig.domain);
 });
