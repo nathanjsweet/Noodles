@@ -9,7 +9,10 @@ var rawString = [
 '<{end}>',
 '<{myhash["nathan"]}>',
 '<{myhash.kate}>',
-'<{one}>'
+'<{one}>',
+'<{loop authors}>',
+'<{name}>:<{value}>',
+'<{end}>'
 ].join('\n');
 var metaData = 'author = <{firstName}> <{lastName}>';
 var time = Date.now(),
