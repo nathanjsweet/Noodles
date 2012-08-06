@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="/bootstrap.responsive.css"/>
 	<link rel="stylesheet" href="/noodles.css"/>
 </head>
-<body data-spy="scroll" data-target=".subnav" data-offset="50">
+<body data-spy="scroll" data-target=".subnav" data-offset="150">
 	<div class="navbar navbar-fixed-top">
 	   <div class="navbar-inner">
 	     <div class="container">
@@ -278,17 +278,30 @@ Invalid user name and/or password.</code></pre>
 	      , $nav = $('.subnav')
 		  , navHeight = $('.navbar').first().height()
 	      , navTop = $('.subnav').length && $('.subnav').offset().top - navHeight
-	      , isFixed = 0
-	    processScroll()
+	      , isFixed = 0,
+		scroll_offset = Math.floor(parseInt($('body').attr('data-offset'),10)/2);
 	    $win.on('scroll', processScroll);
+		if(window.location.href.indexOf('#') > -1)
+			processClick(window.location.href);
+		processScroll();
+		$('.subnav a[href*="#"]').click(processClick);
+		function processClick(href){
+			var full_url = typeof href === "string" ? href : this.href,
+				parts = full_url.split("#"),
+				trgt = parts[1],
+				target_offset = $("#"+trgt).offset(),
+				target_top = target_offset.top,
+				sOff = $nav.hasClass('subnav-fixed') ? scroll_offset : scroll_offset + 36;
+			$('html, body').animate({scrollTop:target_top-sOff}, 1);
+		};
 	    function processScroll() {
-	      var i, scrollTop = $win.scrollTop()
+			var i, scrollTop = $win.scrollTop();
 	      if (scrollTop >= navTop && !isFixed) {
 	        isFixed = 1
-	        $nav.addClass('subnav-fixed')
+	        $nav.addClass('subnav-fixed');
 	      } else if (scrollTop <= navTop && isFixed) {
 	        isFixed = 0
-	        $nav.removeClass('subnav-fixed')
+	        $nav.removeClass('subnav-fixed');
 	      }
 	    }
 	});
