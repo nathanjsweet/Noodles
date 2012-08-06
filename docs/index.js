@@ -120,12 +120,18 @@ description: returns proper extension based on file request
 */
 Docs.getExtension = function(path){
 	var ext = path.split('.'),
-		extension = (ext.length === 1 ? 'html' : ext[ext.length -1].toLowerCase());
-	if(extension === 'js')
-		extension = 'javascript';
+		extension = (ext.length === 1 ? 'html' : ext[ext.length -1].toLowerCase()),
+		contentType = 'text/';
+	switch(extension){
+		case 'ico':
+			contentType = 'image/' + extension;
+			break;
+		default:
+			contentType += extension;
+	}
 	return {
 		extension : extension,
-		contentType : 'text/' + extension
+		contentType : contentType
 	};
 }
 /**--Docs--
