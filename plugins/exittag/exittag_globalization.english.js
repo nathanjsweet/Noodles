@@ -4,5 +4,11 @@ if(typeof process !== "undefined"){
 }
 
 define(function(require, exports, module){
-exports.language = {};
+exports.language = {
+	tag:{
+		'exit':'exit',
+		'exitloop':'exitloop',
+		'continue':'continue'
+	}
+};
 });
