@@ -4,7 +4,7 @@ Introduction
 ------------
 The documentation system for Noodles is extremely simple to use and modify. For reasons not worth going into, you CANNOT build while inside of the docs folder, you must be in front of it.
 	
-	sudo node docs/buildDocs.js
+	sudo node docs/build.js
 
 This will create all the relevant documentation for all the core Noodles engine, as well as any of the plugins that are currently installed. Each plugin has a readme file that gets pulled into the documentation and converted into html for the docs.
 
