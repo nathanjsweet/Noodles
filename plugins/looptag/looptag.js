@@ -82,7 +82,8 @@ exports.Plugin = new Noodles.Plugin({
 	*/
 	onTemplateCreate : function(Template){
 		Template.endTags = Template.endTags || {};
-		Template.endTags[Template.language.tag('loop'),Template.language.tag('sortloop')] = true;
+		Template.endTags[Template.language.tag('loop')] = true;
+		Template.endTags[Template.language.tag('sortloop')] = true;
 	},
 	/*--looptag--
 	name:handleToken
