@@ -1,15 +1,9 @@
 var Noodles = require('./../lib/noodles');
 var rawString = [
-'<{set one = 1}>',
-'<{setahash myhash = nathan:"sweet",kate:"sweet",andrew:"soerens",one:one}>',
-'<{loop myhash}>',
-'<{value}>',
-'<{name}>',
-'<{if __index == 2}><{exitloop}><{end}>',
-'<{end}>',
-'<{myhash["nathan"]}>',
-'<{myhash.kate}>',
-'<{one}>'
+'<{setalist mylist = 3,1,4,5,2,6}>',
+'<{sortloop mylist as bar}>',
+'<{name}>:<{bar}>',
+'<{end}>'
 ].join('\n');
 var metaData = 'author = <{firstName}> <{lastName}>';
 var time = Date.now(),
