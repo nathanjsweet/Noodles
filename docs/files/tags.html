@@ -45,6 +45,7 @@
 				<li><a href="#setahash-tag">setahash</a></li>
 				<li><a href="#setaregex-tag">setaregex</a></li>
 				<li><a href="#loop-tag">loop</a></li>
+				<li><a href="#sortloop-tag">sortloop</a></li>
 				<li><a href="#exitloop-tag">exitloop</a></li>
 				<li><a href="#continue-tag">continue</a></li>
 				<li><a href="#exit-tag">exit</a></li>
@@ -213,6 +214,34 @@ index:	 </code></pre>
 	1</code></pre>
 
 <p>Loops may contain other tags in them, such as if tags, or set tags.</p>
+
+<h2 id="sortloop-tag">SortLoop</h2>
+
+<p>The sortloop tag does everything that the loop tag does, except it accepts extra options that will sort the object in a given order. If no sort
+option is given to it, it will simply sort by value. It cannot sort by &quot;__index&quot;:</p>
+
+<pre><code>//where foo = [3,1,4,5,2,6]
+&lt;{sortloop foo}&gt;&lt;{name}&gt;:&lt;{value}&gt; | &lt;{end}&gt; [OR] &lt;{sortloop foo as bar}&gt;&lt;{name}&gt;:&lt;{bar}&gt; | &lt;{end}&gt;
+//will render:
+1:1 | 4:2 | 0:3 | 2:4 | 3:5 | 5:6 | 
+//where foo = [3,1,4,5,2,6]
+&lt;{sortloop foo on name}&gt;&lt;{name}&gt;:&lt;{value}&gt; | &lt;{end}&gt; [OR] &lt;{sortloop foo as bar on name}&gt;&lt;{name}&gt;:&lt;{bar}&gt; | &lt;{end}&gt;
+//will render:
+0:3 | 1:1 | 2:4 | 3:5 | 4:2 | 5:6 | </code></pre>
+
+<p>A final &quot;descending&quot; parameter can be added to the end of any sort loop to, obviously, order in descending order rather than ascending 
+(which is default).</p>
+
+<pre><code>//where foo = [3,1,4,5,2,6]
+&lt;{sortloop foo descending}&gt;&lt;{name}&gt;:&lt;{value}&gt; | &lt;{end}&gt; [OR] &lt;{sortloop foo as bar descending}&gt;&lt;{name}&gt;:&lt;{bar}&gt; | &lt;{end}&gt;
+//will render:
+5:6 | 3:5 | 2:4 | 0:3 | 4:2 | 1:1 | 
+//where foo = [3,1,4,5,2,6]
+&lt;{sortloop foo on name descending}&gt;&lt;{name}&gt;:&lt;{value}&gt; | &lt;{end}&gt; [OR] &lt;{sortloop foo as bar on name descending}&gt;&lt;{name}&gt;:&lt;{bar}&gt; | &lt;{end}&gt;
+//will render:
+5:6 | 4:2 | 3:5 | 2:4 | 1:1 | 0:3 | </code></pre>
+
+<p>Sortloop will sort things alphabetically as well.</p>
 
 <h2 id="exitloop-tag">ExitLoop</h2>
 
