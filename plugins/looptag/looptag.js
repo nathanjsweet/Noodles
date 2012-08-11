@@ -3,6 +3,45 @@ if(typeof process !== "undefined")
 define(function(require, exports, module){
 //get Noodles, the blank concat is to preven requirejs from getting too smart on us.
 var Noodles = require('./../../lib/noodles.js');
+/*--module--
+name:sortFunc
+description: sort function for sortloop.
+*/
+var sortFunc = function(obj,keys,key,Template,Context,desc){
+	var name = key === Template.language.other('name'),
+		value = key === null || key === Template.language.other('value');
+	keys = keys.sort(function(a,b){
+		if(value){
+			a = obj[a];
+			b = obj[b];
+			if(typeof a === "object" && typeof a.execute !== "undefined")
+				a = a.execute(Template,Context);
+			if(typeof b === "object" && typeof b.execute !== "undefined")
+				b = b.execute(Template,Context);
+		}
+		else if(!name){
+			a = obj[a];
+			b = obj[b];
+			if(typeof a === "object" && typeof a.execute !== "undefined")
+				a = a.execute(Template,Context);
+			if(typeof b === "object" && typeof b.execute !== "undefined")
+				b = b.execute(Template,Context);
+			a = a[key];
+			b = b[key];
+			if(typeof a === "object" && typeof a.execute !== "undefined")
+				a = a.execute(Template,Context);
+			if(typeof b === "object" && typeof b.execute !== "undefined")
+				b = b.execute(Template,Context);
+		}
+		if(desc){
+			return b - a;
+		}
+		else{
+			return a - b;
+		}
+	});
+	return keys;
+};
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
@@ -16,7 +55,7 @@ exports.Plugin = new Noodles.Plugin({
 	@return {array}
 	*/
 	willHandle : function(Template){
-		return [Template.language.tag('loop')];
+		return [Template.language.tag('loop'),Template.language.tag('sortloop')];
 	},
 	/*--looptag--
 	name:pluginName
@@ -43,7 +82,7 @@ exports.Plugin = new Noodles.Plugin({
 	*/
 	onTemplateCreate : function(Template){
 		Template.endTags = Template.endTags || {};
-		Template.endTags[Template.language.tag('loop')] = true;
+		Template.endTags[Template.language.tag('loop'),Template.language.tag('sortloop')] = true;
 	},
 	/*--looptag--
 	name:handleToken
@@ -56,6 +95,8 @@ exports.Plugin = new Noodles.Plugin({
 		switch(tag){
 			case Template.language.tag('loop'):
 				return new Loop(Template,expression);
+			case Template.language.tag('sortloop'):
+				return new Loop(Template,expression,true);
 			default:
 				return {skip:true};
 		}
@@ -66,14 +107,14 @@ name: Loop
 description: Loop object
 @param {Noodles.Template}
 @param {expression}
+@param {bool}
 */
-var Loop = function(Template,expression){
+var Loop = function(Template,expression,sort){
 	var name,set,index;
 	
 	this.rawString = Noodles.Utilities.grabToEndSliceRaw(Template, expression,Template.language.tag('Loop'));
 	this.needs = {};
-	
-	expression = expression.split(' ');
+	expression = expression.split(/\s+/g);
 	if(expression.length < 2){
 		this.skip = true;
 		Noodles.Utilities.warning(Template,'Loop tag has bad syntax');
@@ -89,6 +130,12 @@ var Loop = function(Template,expression){
 	this.needs = Noodles.Utilities.mergeObjectWith(this.needs,this.object.needs);
 
 	this.template = Noodles.Utilities.createSubTemplate(Template,this.rawString, this);
+	if(this.template.needsCallback){
+		this.skip = true;
+		Noodles.Utilities.warning(Template,'Loop cannot contain any tags that will take a long time to run');
+		delete this.template;
+		return;
+	}
 	Template._leftCount++;//the end tag we sliced above
 	this.sets = {};
 	this.modifies = {};
@@ -103,8 +150,9 @@ var Loop = function(Template,expression){
 	this.sets[index];
 	this.modifies[index];
 	this.setExists = false;
-	
-	if(expression.length >= 4){
+	//<{loop foo as bar}>
+	this.sort = !!sort;
+	if(expression.length > 3 && (!this.sort || expression[2].toLowerCase() === Template.language.other('as'))){
 		this.setObject = new Noodles.Object(this.template,expression[3]);
 		if(this.setObject.order.length > 1){
 			Noodles.Utilities.warning(Template,'Loop cannot set an object with multiple levels');
@@ -115,6 +163,34 @@ var Loop = function(Template,expression){
 		this.setExists = true;
 	}
 	
+	if(this.sort){
+		//<{sortloop foo as bar on baz}>
+		if(expression.length > 5){
+			this.sortKey = expression[5];
+		}
+		//<{sortloop foo on bar}>
+		else if(expression.length > 3 && expression[2].toLowerCase() === Template.language.other('on')){
+			this.sortKey = expression[3];
+		}
+		else{
+			this.sortKey = Template.language.other('value');
+		}
+		//<{sortloop foo as bar on baz descending}>
+		if(expression.length > 6){
+			this.descending = expression[6].toLowerCase() === Template.language.other("descending");
+		}
+		//<{sortloop foo on bar descending}> or <{sortloop foo as bar descending}>
+		else if(expression.length > 4 && expression[4].toLowerCase() === Template.language.other("descending")){
+			this.descending = true;
+		}
+		//<{sortloop foo descending}>
+		else if(expression.length > 2 && expression[2].toLowerCase() === Template.language.other("descending")){
+			this.descending = true;
+		}
+		else{
+			this.descending = false;
+		}
+	}
 };
 /*--Loop--
 name: execute
@@ -131,6 +207,8 @@ Loop.prototype.execute = function(Template,Context,Callback){
 		collection = [],
 		key;
 	if(keys === "") return "";
+	if(this.sort) keys = sortFunc(_object,keys,this.sortKey,Template,Context,this.descending);
+	
 	while(i < l && !Context.exitLoop){
 		key = keys[i];
 		this.name.set(Template,Context,key);
