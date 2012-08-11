@@ -126,6 +126,9 @@ Docs.getExtension = function(path){
 		case 'ico':
 			contentType = 'image/' + extension;
 			break;
+		case 'js':
+			contentType = 'application/javascript';
+			break;
 		default:
 			contentType += extension;
 	}
