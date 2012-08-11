@@ -1,0 +1,61 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>Noodles Test page</title>
+	
+</head>
+<body>
+<script src="./../node_modules/requirejs/require.js"></script>
+<script>
+	require(['./../lib/noodles'],function(Noodles){
+		/*var rawString = [
+		'<{set one = 1}>',
+		'<{set l = "length"}>',
+		'<{setalist mylist = "nathan","kate","andrew",one}>',
+		'<{addtolist "foo" to mylist}>',
+		'<{loop mylist}>',
+		'<{if __index == 2}><{exitloop}><{end}>',
+		'<{value}>',
+		'yeah<{__index}>',
+		'<{end}>',
+		'<{mylist[0]}>',
+		'<{mylist[l]}>'
+		].join('\n');*/
+		var rawString = [
+		'<{set one = 1}>',
+		'<{setahash myhash = nathan:"sweet",kate:"sweet",andrew:"soerens",one:one}>',
+		'<{loop myhash}>',
+		'<{value}>',
+		'<{name}>',
+		'<{end}>',
+		'<{myhash["nathan"]}>',
+		'<{myhash.kate}>',
+		'<{one}>'
+		].join('\n');
+
+		var metaData = 'author = <{firstName}> <{lastName}>';
+		var time = Date.now(),
+			object = {'lastname':'Sweet','firstname':'Nathan','authors':["location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp","location", "top", "window", "external", "chrome", "v8Locale", "document", "requirejs", "require", "define", "_exports", "_parseConditional", "_Template", "identifier", "plugin", "myTemp"]};
+		new Noodles.Template({
+			rawString : rawString,
+			metaData:metaData,
+			onFinishCompiling:function(template){
+				time = Date.now() - time;
+				console.log('compile time: ',time,'ms');
+				console.log(template);
+				time = Date.now();
+				template.execute(object,{
+					onRenderAll:function(string){console.log(string);},
+					onFinish:function(date){
+						console.log(date, 'ms render time');
+					}
+				});
+			}
+		});
+	});
+</script>
+</body>
+</html>
