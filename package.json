@@ -9,21 +9,29 @@
     "url": "git://github.com/nathanjsweet/Noodles.git"
   },
   "main": "./lib/noodles.js",
-  "scripts": {
-    "test": "var noodles = require('noodles');"
-  },
   "engines": {
     "node": ">=0.4.0"
   },
-  "dependencies": {
-	"requirejs":">=1.0.7"
-
-	},
-  "devDependencies": {},
   "licenses": [
     {
-      "type" : "MIT",
-      "url" : "http://www.opensource.org/licenses/mit-license.php"
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license.php"
     }
-  ]
+  ],
+  "bin": {
+    "noodles": "feature-test.js"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [
+    "template",
+    "templating",
+    "dsl"
+  ],
+  "dependencies": {
+    "markdown": "~0.3.1"
+  },
+  "devDependencies": {},
+  "license": "MIT"
 }
