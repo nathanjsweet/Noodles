@@ -2,13 +2,21 @@ if(typeof process !== "undefined")
 	var define = require.define;
 define(function(require, exports, module){
 //get Noodles, the blank concat is to preven requirejs from getting too smart on us.
-var Noodles = require('./../../lib/noodles.js');
+var Noodles;
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
 @type{Noodles.Plugin}
 */
-exports.Plugin = new Noodles.Plugin({
+exports.Plugin = {
+	/*--Coretags--
+	name:getNoodles
+	description:gets the noodles object
+	@param{Noodles}
+	*/
+	getNoodles : function(_Noodles){
+		Noodles = _Noodles;
+	},
 	/*--Coretags--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
@@ -59,7 +67,7 @@ exports.Plugin = new Noodles.Plugin({
 				return {skip:true};
 		}
 	}
-});
+};
 
 /*--module--
 name: Conditional

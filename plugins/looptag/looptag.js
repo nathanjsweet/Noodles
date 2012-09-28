@@ -2,7 +2,7 @@ if(typeof process !== "undefined")
 	var define = require.define;
 define(function(require, exports, module){
 //get Noodles, the blank concat is to preven requirejs from getting too smart on us.
-var Noodles = require('./../../lib/noodles.js');
+var Noodles;
 /*--module--
 name:sortFunc
 description: sort function for sortloop.
@@ -47,8 +47,16 @@ name:Plugin
 description:Plugin Class implementation
 @type{Noodles.Plugin}
 */
-exports.Plugin = new Noodles.Plugin({
-	/*--looptag--
+exports.Plugin = {
+	/*--Coretags--
+	name:getNoodles
+	description:gets the noodles object
+	@param{Noodles}
+	*/
+	getNoodles : function(_Noodles){
+		Noodles = _Noodles;
+	},
+	/*--Coretags--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
 	@param{Noodles.Template}
@@ -57,24 +65,24 @@ exports.Plugin = new Noodles.Plugin({
 	willHandle : function(Template){
 		return [Template.language.tag('loop'),Template.language.tag('sortloop')];
 	},
-	/*--looptag--
+	/*--Coretags--
 	name:pluginName
 	@type{string}
 	*/
 	pluginName : 'looptag',
-	/*--looptag--
+	/*--Coretags--
 	name:browserFriendly
 	description:is this plugin browser friendly?
 	*/
 	browserFriendly: true,
-	/*--looptag--
+	/*--Coretags--
 	name:onTemplateExecute
 	description:executed on template run.
 	@param {Noodles.Context}
 	@param{Noodles.Template}
 	*/
 	onTemplateExecute : function(Context,Template){},
-	/*--looptag--
+	/*--Coretags--
 	name:onTemplateExecute
 	description:executed when template is run
 	@param{Noodles.Context}
@@ -85,7 +93,7 @@ exports.Plugin = new Noodles.Plugin({
 		Template.endTags[Template.language.tag('loop')] = true;
 		Template.endTags[Template.language.tag('sortloop')] = true;
 	},
-	/*--looptag--
+	/*--Coretags--
 	name:handleToken
 	description:executed when any tag in "willHandle" is found
 	@param{expression}
@@ -102,7 +110,7 @@ exports.Plugin = new Noodles.Plugin({
 				return {skip:true};
 		}
 	}
-});
+};
 /*--module--
 name: Loop
 description: Loop object

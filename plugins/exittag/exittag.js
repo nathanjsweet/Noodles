@@ -1,15 +1,22 @@
 if(typeof process !== "undefined")
 	var define = require.define;
 define(function(require, exports, module){
-//get Noodles, the blank concat is to preven requirejs from getting too smart on us.
-var Noodles = require('./../../lib/noodles.js');
+var Noodles;
 /*--exports--
 name:Plugin
 description:Plugin Class implementation
 @type{Noodles.Plugin}
 */
-exports.Plugin = new Noodles.Plugin({
-	/*--exittag--
+exports.Plugin = {
+	/*--Coretags--
+	name:getNoodles
+	description:gets the noodles object
+	@param{Noodles}
+	*/
+	getNoodles : function(_Noodles){
+		Noodles = _Noodles;
+	},
+	/*--Coretags--
 	name:willHandle
 	description:array of tags that the coretags plugin will handle
 	@param{Noodles.Template}
@@ -18,30 +25,30 @@ exports.Plugin = new Noodles.Plugin({
 	willHandle : function(Template){
 		return [Template.language.tag('exit'),Template.language.tag('exitloop'),Template.language.tag('continue')];
 	},
-	/*--exittag--
+	/*--Coretags--
 	name:pluginName
 	@type{string}
 	*/
 	pluginName : 'exittag',
-	/*--exittag--
+	/*--Coretags--
 	name:browserFriendly
 	description:is this plugin browser friendly?
 	*/
 	browserFriendly: true,
-	/*--exittag--
+	/*--Coretags--
 	name:onTemplateCreate
 	description:executed on template creation
 	@param{Noodles.Template}
 	*/
 	onTemplateCreate : function(Context,Template){},
-	/*--exittag--
+	/*--Coretags--
 	name:onTemplateExecute
 	description:executed when template is run
 	@param{Noodles.Context}
 	@param{Noodles.Template}
 	*/
 	onTemplateExecute : function(Context, Template){},
-	/*--exittag--
+	/*--Coretags--
 	name:handleToken
 	description:executed when any tag in "willHandle" is found
 	@param{Noodles.Template}
@@ -60,7 +67,7 @@ exports.Plugin = new Noodles.Plugin({
 				return {skip:true};
 		}
 	}
-});
+};
 /*--module--
 name: Exit
 description: Exit object
