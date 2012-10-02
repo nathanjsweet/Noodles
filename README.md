@@ -1,6 +1,13 @@
 Noodles Templating System
 ========================
 ###Created by Nathan Sweet
+
+Installation
+------------
+You can either get Noodles by checking it out of github or by installing it from npm, it should work fine either way.
+	
+	npm install noodles
+	
 Introduction
 ------------
 Noodles is a high-performance template language written in JavaScript. It is written
