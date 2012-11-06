@@ -2,7 +2,7 @@
   "author": "Nathan Sweet <nathanjsweet@gmail.com> (nathansweet.me)",
   "name": "noodles",
   "description": "High Performance templating language",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "homepage": "https://github.com/nathanjsweet/Noodles",
   "repository": {
     "type": "git",
